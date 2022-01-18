@@ -36,7 +36,7 @@ local hash_seed = function(str)
     local len = string.len(str)
     local hash = 0
     for i = 1, len do
-        hash = string.byte(a, i) + (hash << 6) + (hash << 16) - hash
+        hash = string.byte(str, i) + (hash << 6) + (hash << 16) - hash
     end
     return hash
 end
@@ -60,8 +60,9 @@ function M.new(...)
             seed_init = hash_seed(tostring(...))
         end
     elseif num > 1 then -- multiple word provide
+        seed_init = 0
         for i, v in ipairs({...}) do
-            seed_init = seed_init + (num - i) * hash_seed(tostring(v))
+            seed_init = seed_init + (num - i - 1) * hash_seed(tostring(v))
         end
     end
 

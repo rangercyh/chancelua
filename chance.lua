@@ -69,7 +69,7 @@ function M.new(...)
     chance.mt = chance:mersenne_twister(seed_init)
     chance.bimd5 = chance:blueimp_md5()
     chance.random = function()
-        return chance.mt.random(seed_init)
+        return chance.mt:random(seed_init)
     end
     return chance
 end

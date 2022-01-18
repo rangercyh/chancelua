@@ -41,35 +41,152 @@ Any feedback is very welcome.
 http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html
 email: m-mat @ math.sci.hiroshima-u.ac.jp (remove space)
 ]]
-local MersenneTwister = {}
+
+-- Period parameters
+local N = 624
+local M = 397
+local MATRIX_A = 0x9908b0df         -- constant vector a
+local UPPER_MASK = 0x80000000       -- most significant w-r bits
+local LOWER_MASK = 0x7fffffff       -- least significant r bits
+local MASK = 0xffffffff             -- 32 bit mask
+local LEFT_MASK = 0xffff0000
+local RIGHT_MASK = 0x0000ffff
+
+local mt = {}
+mt.__index = mt
+
 -- initializes mt[N] with a seed
-function MersenneTwister.init_genrand()
+function mt:init_genrand(s)
+    self.mt[0] = s & MASK
+    for i = 1, N - 1 do
+        s = self.mt[i - 1] ~ (self.mt[i - 1] >> 30)
+        self.mt[i] = ((((s & LEFT_MASK) >> 16) * 1812433253) << 16) + (s & RIGHT_MASK) * 1812433253 + i
+        --[[
+        See Knuth TAOCP Vol2. 3rd Ed. P.106 for multiplier.
+        In the previous versions, MSBs of the seed affect
+        only MSBs of the array mt[].
+        2002/01/09 modified by Makoto Matsumoto
+        ]]
+        self.mt[i] = self.mt[i] & MASK
+        -- for >32 bit machines
+    end
+    self.mti = N
 end
+
 --[[
 initialize by an array with array-length
 init_key is the array for initializing keys
 key_length is its length
 slight change for C++, 2004/2/26
 ]]
-function MersenneTwister.init_by_array()
-end
--- generates a random number on [0,0xffffffff]-interval
-function MersenneTwister.genrand_int32()
-end
--- generates a random number on [0,0x7fffffff]-interval
-function MersenneTwister.genrand_int31()
-end
--- generates a random number on [0,1]-real-interval
-function MersenneTwister.genrand_real1()
-end
--- generates a random number on [0,1)-real-interval
-function MersenneTwister.random()
-end
--- generates a random number on (0,1)-real-interval
-function MersenneTwister.genrand_real3()
-end
--- generates a random number on [0,1) with 53-bit resolution
-function MersenneTwister.genrand_res53()
+function mt:init_by_array(init_key, key_length)
+    local i, j, k, s = 1, 0
+    self:init_genrand(19650218)
+    k = N > key_length and N or key_length
+    for m = k, 1, -1 do
+        s = self.mt[i - 1] ~ (self.mt[i - 1] >> 30)
+        self.mt[i] = (self.mt[i] ~ (((((s & LEFT_MASK) >> 16) * 1664525) << 16) + ((s & RIGHT_MASK) * 1664525))) + init_key[j] + j     -- non linear
+        self.mt[i] = self.mt[i] & MASK      -- for WORDSIZE > 32 machines
+        i = i + 1
+        j = j + 1
+        if i >= N then
+            self.mt[0] = self.mt[N - 1]
+            i = 1
+        end
+        if j >= key_length then
+            j = 0
+        end
+    end
+    for m = N - 1, 1, -1 do
+        s = self.mt[i - 1] ~ (self.mt[i - 1] >> 30)
+        self.mt[i] = (self.mt[i] ~ (((((s & LEFT_MASK) >> 16) * 1566083941) << 16) + (s & RIGHT_MASK) * 1566083941)) - i   -- non linear
+        self.mt[i] = self.mt[i] & MASK      -- for WORDSIZE > 32 machines
+        i = i + 1
+        if i > N then
+            self.mt[0] = self.mt[N - 1]
+            i = 1
+        end
+    end
+    self.mt[0] = 0x80000000     -- MSB is 1; assuring non-zero initial array
 end
 
-return MersenneTwister
+-- generates a random number on [0,0xffffffff]-interval
+function mt:genrand_int32()
+    -- mag01[x] = x * MATRIX_A  for x=0,1
+    local mag01, y = {
+        [0] = 0x0,
+        [1] = MATRIX_A,
+    }
+    if self.mti >= N then   -- generate N words at one time
+        if self.mti == N + 1 then   -- if init_genrand() has not been called,
+            self:init_genrand(5489) -- a default initial seed is used
+        end
+        for kk = 0, N - M - 1 do
+            y = (self.mt[kk] & UPPER_MASK) | (self.mt[kk + 1] & LOWER_MASK)
+            self.mt[kk] = self.mt[kk + M] ~ (y >> 1) ~ mag01[y & 0x1]
+        end
+        for kk = N - M, N - 2 do
+            y = (self.mt[kk] & UPPER_MASK) | (self.mt[kk + 1] & LOWER_MASK)
+            self.mt[kk] = self.mt[kk + (M - N)] ~ (y >> 1) ~ mag01[y & 0x1]
+        end
+        y = (self.mt[N - 1] & UPPER_MASK) | (self.mt[0] & LOWER_MASK)
+        self.mt[N - 1] = self.mt[M - 1] ~ (y >> 1) ~ mag01[y & 0x1]
+
+        self.mti = 0
+    end
+
+    y = self.mt[self.mti]
+    self.mti = self.mti + 1
+
+    -- Tempering
+    y = y ~ (y >> 11)
+    y = y ~ ((y << 7) & 0x9d2c5680)
+    y = y ~ ((y << 15) & 0xefc60000)
+    y = y ~ (y >> 18)
+
+    return y & MASK
+end
+
+-- generates a random number on [0,0x7fffffff]-interval
+function mt:genrand_int31()
+    return (self:genrand_int32() >> 1)
+end
+
+-- generates a random number on [0,1]-real-interval
+function mt:genrand_real1()
+    return self:genrand_int32() * (1.0 / 4294967295.0)
+    -- divided by 2^32-1
+end
+
+-- generates a random number on [0,1)-real-interval
+function mt:random()
+    return self:genrand_int32() * (1.0 / 4294967296.0)
+    -- divided by 2^32
+end
+
+-- generates a random number on (0,1)-real-interval
+function mt:genrand_real3()
+    return (self:genrand_int32() + 0.5) * (1.0 / 4294967296.0)
+    -- divided by 2^32
+end
+
+-- generates a random number on [0,1) with 53-bit resolution
+function mt:genrand_res53()
+    local a, b = self:genrand_int32() >> 5, self:genrand_int32() >> 6
+    return (a * 67108864.0 + b) * (1.0 / 9007199254740992.0)
+end
+
+local M = {}
+function M.new(seed)
+    if not seed then
+        -- kept random number same size as time used previously to ensure no unexpected results downstream
+        seed = math.floor(math.random() * 10^13)
+    end
+    local self = setmetatable({
+        mt = {},        -- the array for the state vector
+        mti = N + 1,    -- mti==N + 1 means mt[N] is not initialized
+    }, mt)
+    self:init_genrand(seed)
+    return self
+end
+return M

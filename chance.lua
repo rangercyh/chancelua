@@ -52,7 +52,7 @@ function M.new(...)
     if num == 1 then
         local st = type(...)
         if st == "function" then    -- if user has provided a function, use that at the generator
-            chance.random = st
+            chance.random = ...
             return chance
         elseif st == "number" then
             seed_init = math.tointeger(st)
@@ -66,10 +66,10 @@ function M.new(...)
         end
     end
 
-    chance.mt = chance:mersenne_twister(seed_init)
+    local r = chance:mersenne_twister(seed_init)
     chance.bimd5 = chance:blueimp_md5()
     chance.random = function()
-        return chance.mt:random(seed_init)
+        return r:random()
     end
     return chance
 end

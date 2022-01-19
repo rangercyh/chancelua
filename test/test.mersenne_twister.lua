@@ -4,7 +4,7 @@ local Chance = require "chance"
 
 local chance = Chance.new()
 
-local mt = chance:mersenne_twister()
+local mt = chance:mersenne_twister(123)
 
 print(mt:genrand_int32())
 print(mt:genrand_int31())

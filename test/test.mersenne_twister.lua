@@ -1,5 +1,3 @@
-package.path = package.path .. ";../?.lua"
-
 local Chance = require "chance"
 
 local chance = Chance.new()
@@ -13,4 +11,4 @@ print(mt:random())
 print(mt:genrand_real3())
 print(mt:genrand_res53())
 
-
+print("-------->>>>>>>> mersenne_twister test ok <<<<<<<<--------")

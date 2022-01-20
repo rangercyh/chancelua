@@ -1,5 +1,4 @@
-local MersenneTwister = require "mersenne_twister"
-local BlueImpMD5 = require "blueimp_md5"
+local MersenneTwister = require "utils.mersenne_twister"
 
 local mt = {}
 mt.__index = mt
@@ -28,9 +27,6 @@ inject_mt(mt, "mt", "misc")
 function mt:mersenne_twister(seed)
     return MersenneTwister.new(seed)
 end
-function mt:blueimp_md5()
-    return BlueImpMD5.new()
-end
 
 local hash_seed = function(str)
     local len = string.len(str)
@@ -41,7 +37,7 @@ local hash_seed = function(str)
     return hash
 end
 
-local _VERSION = "1.1.8"
+local _VERSION = "1.0.0"
 local M = {}
 function M.new(...)
     local chance = setmetatable({
@@ -67,7 +63,6 @@ function M.new(...)
     end
 
     local r = chance:mersenne_twister(seed_init)
-    chance.bimd5 = chance:blueimp_md5()
     chance.random = function()
         return r:random()
     end

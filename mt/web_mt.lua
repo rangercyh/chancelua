@@ -28,7 +28,8 @@ chance.color({format: 'name'})   => 'red'
 * Make color uppercase
 chance.color({casing: 'upper'})  => '#29CFA7'
 * Min Max values for RGBA
-var light_red = chance.color({format: 'hex', min_red: 200, max_red: 255, max_green: 0, max_blue: 0, min_alpha: .2, max_alpha: .3});
+var light_red = chance.color({format: 'hex', min_red: 200, max_red: 255, max_green: 0,
+    max_blue: 0, min_alpha: .2, max_alpha: .3});
 @param  [object] options
 @return [string] color value
 ]]

@@ -110,7 +110,7 @@ local bit_rshift = function(n, bits)
         n = n / 2
         n = bit_or(floor(n), high_bit)
     end
-    return floor(n)
+    return bit_and(floor(n), 0xFFFFFFFF)
 end
 
 local bit_lshift = function(n, bits)
@@ -123,13 +123,6 @@ local bit_lshift = function(n, bits)
     end
     return bit_and(n, 0xFFFFFFFF)
 end
-
--- print(bit_rshift(-100, 1), -100 >> 1 & 0xffffffff)
--- print(bit_lshift(-100, 1), -100 << 1 & 0xffffffff)
--- print(bit_xor(-100, 1), (-100 ~ 1) & 0xffffffff)
--- print(bit_xor(0, 3), (0 ~ 3) & 0xffffffff)
--- print(bit_xor(-100, 3), (-100 ~ 3) & 0xffffffff)
--- print(bit_rshift(-99, 0), (-99 >> 0) & 0xffffffff)
 
 return {
     ["bnot"] = bit_not,

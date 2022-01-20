@@ -61,7 +61,8 @@ function mt:init_genrand(s)
     self.mt[0] = bits.rshift(s, 0)
     for i = 1, N - 1 do
         s = bits.bxor(self.mt[i - 1], bits.rshift(self.mt[i - 1], 30))
-        self.mt[i] = bits.lshift(bits.rshift(s & LEFT_MASK, 16) * 1812433253, 16) + (s & RIGHT_MASK) * 1812433253 + i
+        self.mt[i] = bits.lshift(bits.rshift(bits.band(s, LEFT_MASK), 16) * 1812433253, 16) +
+                bits.band(s, RIGHT_MASK) * 1812433253 + i
         --[[
         See Knuth TAOCP Vol2. 3rd Ed. P.106 for multiplier.
         In the previous versions, MSBs of the seed affect
@@ -87,8 +88,8 @@ function mt:init_by_array(init_key, key_length)
     for _ = k, 1, -1 do
         s = bits.bxor(self.mt[i - 1], bits.rshift(self.mt[i - 1], 30))
         self.mt[i] = bits.bxor(self.mt[i],
-                bits.lshift(bits.rshift(s & LEFT_MASK, 16) * 1664525, 16) +
-                (s & RIGHT_MASK) * 1664525) + init_key[j] + j  -- non linear
+                bits.lshift(bits.rshift(bits.band(s, LEFT_MASK), 16) * 1664525, 16) +
+                bits.band(s, RIGHT_MASK) * 1664525) + init_key[j] + j  -- non linear
         self.mt[i] = bits.rshift(self.mt[i], 0) -- for WORDSIZE > 32 machines
         i = i + 1
         j = j + 1
@@ -103,8 +104,8 @@ function mt:init_by_array(init_key, key_length)
     for _ = N - 1, 1, -1 do
         s = bits.bxor(self.mt[i - 1], bits.rshift(self.mt[i - 1], 30))
         self.mt[i] = bits.bxor(self.mt[i],
-                bits.lshift(bits.rshift(s & LEFT_MASK, 16) * 1566083941, 16) +
-                (s & RIGHT_MASK) * 1566083941) - i    -- non linear
+                bits.lshift(bits.rshift(bits.band(s, LEFT_MASK), 16) * 1566083941, 16) +
+                bits.band(s, RIGHT_MASK) * 1566083941) - i    -- non linear
         self.mt[i] = bits.rshift(self.mt[i], 0) -- for WORDSIZE > 32 machines
         i = i + 1
         if i >= N then

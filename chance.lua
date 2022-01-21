@@ -51,7 +51,7 @@ function M.new(...)
             chance.random = ...
             return chance
         elseif st == "number" then
-            seed_init = math.tointeger(st)
+            seed_init = math.tointeger(...)
         else
             seed_init = hash_seed(tostring(...))
         end

@@ -1,4 +1,4 @@
-local Helper = require "helper"
+local Helper = require "utils.helper"
 local Chance = require "chance"
 
 local chance = Chance.new()
@@ -91,8 +91,10 @@ Helper.thousand_times_f(function()
     assert(chance:random() == 123, tip)
 end)
 
+chance = Chance.new()
+
 tip = 'character() returns a character'
-local char = chance.character()
+local char = chance:character()
 assert(type(char) == "string", tip)
 assert(string.len(char) == 1, tip)
 
@@ -129,375 +131,333 @@ end)
 tip = 'floating() returns a random floating'
 assert(math.type(chance:floating()) == "float", tip)
 
-test('floating() can take both a max and min and obey them both', t => {
-    _.times(1000, () => {
-        let floating = chance.floating({ min: 90, max: 100 })
-        t.true(floating > 89)
-        t.true(floating < 101)
-    })
-})
+tip = 'floating() can take both a max and min and obey them both'
+Helper.thousand_times_f(function()
+    local floating = chance:floating({ min = 90, max = 100 })
+    assert(floating > 89 and floating < 101, tip)
+end)
 
-test('floating() will not take fixed + min that would be out of range', t => {
-    const fn = () => chance.floating({ fixed: 13, min: -9007199254740992 })
-    t.throws(fn, "Chance: Min specified is out of range with fixed. Min should be, at least, -900.7199254740992")
-})
+tip = 'floating() will not take fixed + min that would be out of range'
+local fn = function()
+    chance:floating({ fixed = 13, min = -9007199254740992 })
+end
+assert(not(pcall(fn)), tip)
 
-test('floating() will not take fixed + max that would be out of range', t => {
-    const fn = () => chance.floating({ fixed: 13, max: 9007199254740992 })
-    t.throws(fn, "Chance: Max specified is out of range with fixed. Max should be, at most, 900.7199254740992")
-})
+tip = 'floating() will not take fixed + max that would be out of range'
+local fn = function()
+    chance:floating({ fixed = 13, max = 9007199254740992 })
+end
+assert(not(pcall(fn)), tip)
+tip = 'floating() obeys the fixed parameter, when present'
+Helper.thousand_times_f(function()
+    local floating = chance:floating({ fixed = 4 })
+    floating = tostring(floating)
+    assert(string.len(floating) - (string.find(floating, "%.")) < 5, tip)
+end)
+tip = 'floating() can take fixed and obey it'
+Helper.thousand_times_f(function()
+    local floating = chance:floating({ fixed = 3 })
+    floating = tostring(floating)
+    assert(string.len(floating) - (string.find(floating, "%.")) <= 3, tip)
+end)
 
-test('floating() obeys the fixed parameter, when present', t => {
-    _.times(1000, () => {
-        let floating = chance.floating({ fixed: 4 })
-        let decimals = floating.toString().split('.')[1] ? floating.toString().split('.')[1] : ''
-        t.true(decimals.length < 5)
-    })
-})
+tip = 'floating() will not take both fixed and precision'
+local fn = function()
+    chance:floating({ fixed = 2, precision = 8 })
+end
+assert(not(pcall(fn)), tip)
 
-test('floating() can take fixed and obey it', t => {
-    _.times(1000, () => {
-        let floating = chance.floating({ fixed: 3 })
-        let parsed = parseFloat(floating.toFixed(3))
-        t.is(floating, parsed)
-    })
-})
+tip = 'hex() works as expected'
+Helper.thousand_times_f(function()
+    assert(not(string.find(chance:hex(), "[^0-9a-f]")), tip)
+end)
 
-test('floating() will not take both fixed and precision', t => {
-    const fn = () => chance.floating({fixed: 2, precision: 8})
-    t.throws(fn, 'Chance: Cannot specify both fixed and precision.')
-})
+tip = 'hex() can take Upper and obey it'
+Helper.thousand_times_f(function()
+    assert(not(string.find(chance:hex({ casing = 'upper' }), "[^0-9A-F]")), tip)
+end)
 
-test('get() works as expected', t => {
-    let data = chance.get('lastNames')
-    t.true(typeof data === 'object')
-})
+tip = 'integer() returns a random integer'
+assert(math.type(chance:integer()) == "integer", tip)
 
-test('hex() works as expected', t => {
-    _.times(1000, () => {
-        t.true(/[0-9a-f]/.test(chance.hex()))
-    })
-})
+tip = 'integer() is sometimes negative, sometimes positive'
+local positive_count = 0
+Helper.thousand_times_f(function()
+    if chance:integer() > 0 then
+        positive_count = positive_count + 1
+    end
+end)
+-- Note: In very extreme circumstances this test may fail as, by its
+-- nature it's random. But it's a low enough percentage that I'm
+-- willing to accept it.
+assert(positive_count > 200 and positive_count < 800, tip)
 
-test('hex() can take Upper and obey it', t => {
-    _.times(1000, () => {
-        t.true(/[0-9A-F]/.test(chance.hex({ casing: 'upper' })))
-    })
-})
+tip = 'integer() can take a zero min and obey it'
+Helper.thousand_times_f(function()
+    assert(chance:integer({ min = 0 }) > 0, tip)
+end)
 
-test('integer() returns a random integer', t => {
-    t.is(typeof chance.integer(), 'number')
-})
+tip = 'integer() can take a negative min and obey it'
+Helper.thousand_times_f(function()
+    assert(chance:integer({ min = -25 }) > -26, tip)
+end)
 
-test('integer() is sometimes negative, sometimes positive', t => {
-    let positiveCount = 0
-    _.times(1000, () => {
-        if (chance.integer() > 0) {
-            positiveCount++
-        }
-    })
+tip = 'integer() can take a negative min and max and obey both'
+Helper.thousand_times_f(function()
+    local integer = chance:integer({ min = -25, max = -1 })
+    assert(integer > -26 and integer < 0, tip)
+end)
 
-    // Note: In very extreme circumstances this test may fail as, by its
-    // nature it's random. But it's a low enough percentage that I'm
-    // willing to accept it.
-    t.true((positiveCount > 200) && (positiveCount < 800))
-})
+tip = 'integer() can take a min with absolute value less than max and return in range above'
+local count = 0
+Helper.thousand_times_f(function()
+    -- With a range this large we'd expect most values to be
+    -- greater than 1 if this works correctly.
+    if math.abs(chance:integer({ min = -1, max = 1000000 })) < 2 then
+        count = count + 1
+    end
+end)
+assert(count < 900, tip)
 
-test('integer() can take a zero min and obey it', t => {
-    _.times(1000, () => {
-        t.true(chance.integer({ min: 0 }) > 0)
-    })
-})
+tip = 'integer() throws an error when min > max'
+local fn = function()
+    chance:integer({ min = 1000, max = 500 })
+end
+assert(not(pcall(fn)), tip)
 
-test('integer() can take a negative min and obey it', t => {
-    _.times(1000, () => {
-        t.true(chance.integer({ min: -25 }) > -26)
-    })
-})
+tip = 'letter() returns a letter'
+Helper.thousand_times_f(function()
+    local letter = chance:letter()
+    assert(type(letter) == "string", tip)
+    assert(string.len(letter) == 1, tip)
+    assert(string.find(letter, "[a-z]"), tip)
+end)
 
-test('integer() can take a negative min and max and obey both', t => {
-    _.times(1000, () => {
-        let integer = chance.integer({ min: -25, max: -1 })
-        t.true((integer > -26) && integer < 0)
-    })
-})
+tip = 'letter() can take upper case'
+Helper.thousand_times_f(function()
+    local letter = chance:letter({ casing = "upper" })
+    assert(type(letter) == "string", tip)
+    assert(string.len(letter) == 1, tip)
+    assert(string.find(letter, "[A-Z]"), tip)
+end)
 
-test('integer() can take a min with absolute value less than max and return in range above', t => {
-    let count = 0
-    _.times(1000, () => {
-        // With a range this large we'd expect most values to be
-        // greater than 1 if this works correctly.
-        if (Math.abs(chance.integer({ min: -1, max: 1000000 })) < 2) {
-            count++
-        }
-    })
-    t.true(count < 900)
-})
+tip = 'natural() returns a random natural'
+assert(math.type(chance:natural()) == "integer", tip)
 
-test('integer() throws an error when min > max', t => {
-    const fn = () => chance.integer({ min: 1000, max: 500 })
-    t.throws(fn, 'Chance: Min cannot be greater than Max.')
-})
+tip = 'natural() throws an error if min < 0'
+local fn = function()
+    chance:natural({min = - 23})
+end
+assert(not(pcall(fn)), tip)
 
-test('letter() returns a letter', t => {
-    _.times(1000, () => {
-        let letter = chance.letter()
-        t.is(typeof letter, 'string')
-        t.is(letter.length, 1)
-        t.true(letter.match(/[a-z]/) !== null)
-    })
-})
+tip = 'natural() is always positive or zero'
+local positive_count = 0
+Helper.thousand_times_f(function()
+    if chance:natural() >= 0 then
+        positive_count = positive_count + 1
+    end
+end)
+assert(positive_count == 1000, tip)
 
-test('letter() can take upper case', t => {
-    _.times(1000, () => {
-        let letter = chance.letter({ casing: 'upper' })
-        t.is(typeof letter, 'string')
-        t.is(letter.length, 1)
-        t.true(letter.match(/[A-Z]/) !== null)
-    })
-})
+tip = 'natural() can take just a min and obey it'
+Helper.thousand_times_f(function()
+    assert(chance:natural({ min = 9007199254740991 }) > 9007199254740990, tip)
+end)
 
-test('natural() returns a random natural', t => {
-    t.is(typeof chance.natural(), 'number')
-})
+tip = 'natural() can take just a max and obey it'
+Helper.thousand_times_f(function()
+    assert(chance:natural({ max = 100 }) < 101, tip)
+end)
 
-test('natural() throws an error if min < 0', t => {
-    const fn = () => chance.natural({ min: -23 })
-    t.throws(fn, 'Chance: Min cannot be less than zero.')
-})
+tip = 'natural() can take both a max and min and obey them both'
+Helper.thousand_times_f(function()
+    local natural = chance:natural({ min = 90, max = 100 })
+    assert(natural > 89 and natural < 101, tip)
+end)
 
-test('natural() is always positive or zero', t => {
-    let positiveCount = 0
-    _.times(1000, () => {
-        if (chance.natural() >= 0) {
-            positiveCount++
-        }
-    })
-    t.is(positiveCount, 1000)
-})
+tip = 'natural() works with both bounds 0'
+Helper.thousand_times_f(function()
+    assert(chance:natural({ min = 0, max = 0 }) == 0, tip)
+end)
 
-test('natural() can take just a min and obey it', t => {
-    _.times(1000, () => {
-        t.true(chance.natural({ min: 9007199254740991 }) > 9007199254740990)
-    })
-})
+tip = 'natural() respects numerals'
+Helper.thousand_times_f(function()
+    local natural = chance:natural({ numerals = 2 })
+    assert(natural <= 99 and natural >= 10, tip)
+end)
 
-test('natural() can take just a max and obey it', t => {
-    _.times(1000, () => {
-        t.true(chance.natural({ max: 100 }) < 101)
-    })
-})
+tip = 'natural() works with excluded numbers'
+Helper.thousand_times_f(function()
+    local natural = chance:natural({ min = 1, max = 5, exclude = { 1, 3 } })
+    assert(natural <= 5 and natural >= 1 and natural ~= 1 and natural ~= 3, tip)
+end)
 
-test('natural() can take both a max and min and obey them both', t => {
-    _.times(1000, () => {
-        let natural = chance.natural({ min: 90, max: 100 })
-        t.true(natural > 89)
-        t.true(natural < 101)
-    })
-})
+tip = 'natural() works within empty exclude option'
+Helper.thousand_times_f(function()
+    local natural = chance:natural({ min = 1, max = 5, exclude = {} })
+    assert(natural <= 5 and natural >= 1, tip)
+end)
 
-test('natural() works with both bounds 0', t => {
-    _.times(1000, () => {
-        t.is(chance.natural({ min: 0, max: 0 }), 0)
-    })
-})
+tip = 'natural() throws an error if exclude is not an array'
+local fn = function()
+    chance:natural({ min = 1, max = 5, exclude = "foo" })
+end
+assert(not(pcall(fn)), tip)
 
-test('natural() respects numerals', t => {
-    _.times(1000, () => {
-        let natural = chance.natural({ numerals: 2 })
-        t.true(natural <= 99)
-        t.true(natural >= 10)
-    })
-})
+tip = 'natural() throws an error if exclude is not an array'
+local fn = function()
+    chance:natural({ min = 1, max = 5, exclude = { "puppies", 1 } })
+end
+assert(not(pcall(fn)), tip)
 
-test('natural() works with excluded numbers', t => {
-    _.times(1000, () => {
-        let natural = chance.natural({ min: 1, max: 5, exclude: [1, 3] })
-        t.true(natural <= 5)
-        t.true(natural >= 1)
-        t.true(natural !== 1)
-        t.true(natural !== 3)
-    })
-})
+tip = 'natural() throws an error if min > max'
+local fn = function()
+    chance:natural({ min = 1000, max = 500 })
+end
+assert(not(pcall(fn)), tip)
 
-test('natural() works within empty exclude option', t => {
-    _.times(1000, () => {
-        let natural = chance.natural({ min: 1, max: 5, exclude: [] })
-        t.true(natural <= 5)
-        t.true(natural >= 1)
-    })
-})
+tip = 'natural() throws an error if numerals is less than 1'
+local fn = function()
+    chance:natural({ numerals = 0 })
+end
+assert(not(pcall(fn)), tip)
 
-test('natural() throws an error if exclude is not an array', t => {
-    const fn = () => chance.natural({ min: 1, max: 5, exclude: "foo" })
-    t.throws(fn, 'Chance: exclude must be an array.')
-})
+tip = 'prime() returns a number'
+assert(math.type(chance:prime()) == "integer", tip)
 
-test('natural() throws an error if exclude is not an array', t => {
-    const fn = () => chance.natural({ min: 1, max: 5, exclude: ["puppies", 1] })
-    t.throws(fn, 'Chance: exclude must be numbers.')
-})
+tip = 'prime() throws an error if min < 0'
+local fn = function()
+    chance:prime({ min = -23 })
+end
+assert(not(pcall(fn)), tip)
 
-test('natural() throws an error if min > max', t => {
-    const fn = () => chance.natural({ min: 1000, max: 500 })
-    t.throws(fn, 'Chance: Min cannot be greater than Max.')
-})
+tip = 'prime() throws an error if min > max'
+local fn = function()
+    chance:prime({ min = 1000, max = 500 })
+end
+assert(not(pcall(fn)), tip)
 
-test('natural() throws an error if numerals is less than 1', t => {
-    const fn = () => chance.natural({ numerals: 0 })
-    t.throws(fn, 'Chance: Numerals cannot be less than one.')
-})
+tip = 'prime() is always positive and odd (or 2)'
+local positive_count = 0
+Helper.thousand_times_f(function()
+    local prime = chance:prime()
+    if prime > 0 and (prime % 2 == 1 or prime == 2) then
+        positive_count = positive_count + 1
+    end
+end)
+assert(positive_count == 1000, tip)
 
-test('prime() returns a number', t => {
-    t.is(typeof chance.prime(), 'number')
-})
+tip = 'prime() can take just a min and obey it'
+Helper.thousand_times_f(function()
+    assert(chance:prime({min = 5000}) >= 5000, tip)
+end)
 
-test('prime() throws an error if min < 0', t => {
-    const fn = () => chance.prime({ min: -23 })
-    t.throws(fn, 'Chance: Min cannot be less than zero.')
-})
+tip = 'prime() can take just a max and obey it'
+Helper.thousand_times_f(function()
+    assert(chance:prime({max = 20000}) <= 20000, tip)
+end)
 
-test('prime() throws an error if min > max', t => {
-    const fn = () => chance.prime({ min: 1000, max: 500 })
-    t.throws(fn, 'Chance: Min cannot be greater than Max.')
-})
+tip = 'prime() can take both a max and min and obey them both'
+Helper.thousand_times_f(function()
+    local prime = chance:prime({ min = 90, max = 100 })
+    assert(prime >= 90 and prime <= 100, tip)
+end)
 
-test('prime() is always positive and odd (or 2)', t => {
-    let positiveCount = 0
-    _.times(1000, () => {
-        const prime = chance.prime()
-        if (prime > 0 && (prime % 2 === 1 || prime === 2)) {
-            positiveCount++
-        }
-    })
-    t.is(positiveCount, 1000)
-})
+tip = 'set() works as expected'
+local cdata = { lastNames = {'customName', 'testLast'} }
+chance:set(cdata)
+local data = chance:get('lastNames')
+assert(type(data) == "table" and #data == 2, tip)
 
-test('prime() can take just a min and obey it', t => {
-    _.times(1000, () => {
-        t.true(chance.prime({ min: 5000 }) >= 5000)
-    })
-})
+tip = 'string() returns a string'
+assert(type(chance:string() == "string"), tip)
 
-test('prime() can take just a max and obey it', t => {
-    _.times(1000, () => {
-        t.true(chance.prime({ max: 20000 }) <= 20000)
-    })
-})
+tip = 'string() obeys length, when specified'
+Helper.thousand_times_f(function()
+    local length = chance:natural({ min = 1, max = 25 })
+    assert(string.len(chance:string({ length = length })) == length, tip)
+end)
 
-test('prime() can take both a max and min and obey them both', t => {
-    _.times(1000, () => {
-        const prime = chance.prime({ min: 90, max: 100 })
-        t.true(prime >= 90)
-        t.true(prime <= 100)
-    })
-})
+tip = 'string() throws error if length < 0'
+local fn = function()
+    chance:string({ length = -23 })
+end
+assert(not(pcall(fn)), tip)
 
-test('set() works as expected', t => {
-    let cData = { lastNames: ['customName', 'testLast'] }
-    chance.set(cData)
-    let data = chance.get('lastNames')
-    t.true(_.isArray(data))
-    t.is(data.length, 2)
-})
+tip = 'string() returns only letters with alpha'
+Helper.thousand_times_f(function()
+    local str = chance:string({ alpha = true })
+    assert(not(string.find(str, "[^a-zA-Z]")), tip)
+end)
 
-test('string() returns a string', t => {
-    t.is(typeof chance.string(), 'string')
-})
+tip = 'string() obeys upper case'
+Helper.thousand_times_f(function()
+    local str = chance:string({ alpha = true, casing = "upper" })
+    assert(not(string.find(str, "[^A-Z]")), tip)
+end)
 
-test('string() obeys length, when specified', t => {
-    _.times(1000, () => {
-        let length = chance.natural({ min: 1, max: 25 })
-        t.is(chance.string({ length: length }).length, length)
-    })
-})
+tip = 'string() obeys lower case'
+Helper.thousand_times_f(function()
+    local str = chance:string({ alpha = true, casing = "lower" })
+    assert(not(string.find(str, "[^a-z]+")), tip)
+end)
 
-test('string() throws error if length < 0', t => {
-    const fn = () => chance.string({ length: -23 })
-    t.throws(fn, 'Chance: Length cannot be less than zero.')
-})
+tip = 'string() obeys symbol'
+Helper.thousand_times_f(function()
+    local str = chance:string({ symbols = true })
+    assert(not(string.find(str, "[^%!%@%#%$%%%^%&%*%(%)%[%]]")), tip)
+end)
 
-test('string() returns only letters with alpha', t => {
-    _.times(1000, () => {
-        let str = chance.string({ alpha: true })
-        t.true(/[a-zA-Z]+/.test(str))
-    })
-})
+tip = 'string() can take just a min and obey it'
+Helper.thousand_times_f(function()
+    assert(string.len(chance:string({ min = 6 })) >= 6, tip)
+end)
 
-test('string() obeys upper case', t => {
-    _.times(1000, () => {
-        let str = chance.string({ alpha: true, casing: 'upper' })
-        t.true(/[A-Z]+/.test(str))
-    })
-})
+tip = 'string() can take just a max and obey it'
+Helper.thousand_times_f(function()
+    assert(string.len(chance:string({ max = 20 })) <= 20, tip)
+end)
 
-test('string() obeys lower case', t => {
-    _.times(1000, () => {
-        let str = chance.string({ alpha: true, casing: 'lower' })
-        t.true(/[a-z]+/.test(str))
-    })
-})
+tip = 'falsy() should return a falsy value'
+Helper.thousand_times_f(function()
+    local v = chance:falsy()
+    if type(v) == "table" then
+        assert(#v == 0, tip)
+    else
+        assert(v == false or v == "" or v == 0 or v == nil, tip)
+    end
+end)
 
-test('string() obeys symbol', t => {
-    _.times(1000, () => {
-        let str = chance.string({ symbols: true })
-        t.true(/[\!\@\#\$\%\^\&\*\(\)\[\]]+/.test(str))
-    })
-})
+tip = 'falsy() should return a falsy value using a pool data'
+Helper.thousand_times_f(function()
+    local v = chance:falsy({ pool = { nil, 0 } })
+    assert(v == nil or v == 0, tip)
+end)
 
-test('string() can take just a min and obey it', t => {
-    _.times(1000, () => {
-        t.true(chance.string({ min: 6 }).length >= 6)
-    })
-})
+tip = 'template() returns alpha numeric substituted'
+Helper.thousand_times_f(function()
+    local str = chance:template('ID-{Aa}-{##}')
+    assert(string.find(str, "ID%-[A-Z][a-z]%-[0-9][0-9]"), tip)
+end)
 
-test('string() can take just a max and obey it', t => {
-    _.times(1000, () => {
-        t.true(chance.string({ max: 20 }).length <= 20)
-    })
-})
+tip = 'template() rejects unknown tokens'
+local fn = function(t)
+    chance:template(t)
+end
+assert(not(pcall(fn, "{Aa-}")), tip)
+assert(not(pcall(fn, "{Aa{}")), tip)
+assert(not(pcall(fn, "{Aab}")), tip)
 
-test('falsy() should return a falsy value', t => {
-    _.times(1000, () => {
-        const value = chance.falsy()
-        t.falsy(value)
-    })
-})
+tip = 'template() allows escape sequnce'
+assert(chance:template("\\\\ID-\\{Aa\\}") == "\\ID-{Aa}", tip)
 
-test('falsy() should return a falsy value using a pool data', t => {
-    _.times(1000, () => {
-        const value = chance.falsy({pool: [null, undefined]})
-        t.falsy(value)
-    })
-})
+tip = 'template() rejects invalid escape sequnce'
+assert(not(pcall(fn, "ID-\\Aa")), tip)
 
-test('template() returns alpha numeric substituted', t => {
-    _.times(1000, () => {
-        let str = chance.template('ID-{Aa}-{##}')
-        t.regex(str, /^ID-[A-Z][a-z]-[0-9][0-9]$/)
-    })
-})
+tip = 'template() cannot be undefined'
+assert(not(pcall(fn)))
 
-test('template() rejects unknown tokens', t => {
-    t.throws(() => chance.template('{Aa-}'), 'Invalid replacement character: "-".')
-    t.throws(() => chance.template('{Aa{}'), 'Invalid replacement character: "{".')
-    t.throws(() => chance.template('{Aab}'), 'Invalid replacement character: "b".')
-})
-
-test('template() allows escape sequnce', t => {
-    t.is(chance.template('\\\\ID-\\{Aa\\}'), '\\ID-{Aa}')
-})
-
-test('template() rejects invalid escape sequnce', t => {
-    t.throws(() => chance.template('ID-\\Aa'), 'Invalid escape sequence: "\\A".')
-})
-
-test('template() cannot be undefined', t => {
-    t.throws(() => chance.template(), 'Template string is required')
-})
-
-test('template() cannot be empty', t => {
-    t.throws(() => chance.template(''), 'Template string is required')
-})
+tip = 'template() cannot be empty'
+assert(not(pcall(fn, "")), tip)
 
 print("-------->>>>>>>> basics test ok <<<<<<<<--------")

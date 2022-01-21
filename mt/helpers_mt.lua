@@ -27,7 +27,16 @@ end
 
   There can be more parameters after these. All additional parameters are provided to the given function
 ]]
-function mt:n()
+function mt:n(fn, obj, n, ...)
+    assert(type(fn) == "function", "Chance: The first argument must be a function.")
+    n = n or 1
+    local i, arr = n, {}
+    -- Providing a negative count should result in a noop.
+    i = math.max(0, i)
+    for _ = i, 1, -1 do
+        arr[#arr + 1] = fn(obj, ...)
+    end
+    return arr
 end
 -- H/T to SO for this one: http://vq.io/OtUrZ5
 function mt:pad()

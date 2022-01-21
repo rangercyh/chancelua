@@ -1,3 +1,6 @@
+local helper = require "utils.helper"
+local data   = require "utils.data"
+
 local mt = {}
 
 -- Coin - Flip, flip, flipadelphia
@@ -106,7 +109,8 @@ function mt:file()
 end
 
 -- Get the data based on key
-function mt:get()
+function mt:get(name)
+    return helper.clone(data[name])
 end
 
 -- Mac Address
@@ -120,8 +124,16 @@ function mt:radio()
 end
 
 -- Set the data as key and data or the data map
-function mt:set()
+function mt:set(name, values)
+    if type(name) == "string" then
+        data[name] = values
+    else
+        for k, v in pairs(name) do
+            data[k] = v
+        end
+    end
 end
+
 function mt:tv()
 end
 

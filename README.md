@@ -6,6 +6,24 @@ Chancelua - Random generator helper for Lua
 
 ## Usage
 
+### basic
+```lua
+local Chance = require "chance"
+local chance = Chance.new()
+chance:bool()
+chance:falsy()
+chance:animal()
+chance:character()
+chance:floating()
+chance:integer()
+chance:natural()
+chance:prime()
+chance:is_prime()
+chance:hex()
+chance:letter()
+chance:string()
+chance:template()
+```
 
 ## Notes
 

@@ -93,6 +93,14 @@ end)
 
 chance = Chance.new()
 
+tip = 'animal() return a animal'
+assert(type(chance:animal()) == "string", tip)
+assert(type(chance:animal({ type = "desert" })) == "string", tip)
+local fn = function()
+    chance:animal({ type = "a" })
+end
+assert(not(pcall(fn)), tip)
+
 tip = 'character() returns a character'
 local char = chance:character()
 assert(type(char) == "string", tip)
@@ -160,12 +168,6 @@ Helper.thousand_times_f(function()
     floating = tostring(floating)
     assert(string.len(floating) - (string.find(floating, "%.")) <= 3, tip)
 end)
-
-tip = 'floating() will not take both fixed and precision'
-local fn = function()
-    chance:floating({ fixed = 2, precision = 8 })
-end
-assert(not(pcall(fn)), tip)
 
 tip = 'hex() works as expected'
 Helper.thousand_times_f(function()

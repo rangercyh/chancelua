@@ -104,7 +104,6 @@ end
 ]]
 function mt:floating(options)
     options = helper.init_options(options, {fixed = 4})
-    assert(not(options.fixed and options.precision), "Chance: Cannot specify both fixed and precision.")
     local INT_MAX = math.tointeger(2 ^ 32)
     local fixed = math.floor(10 ^ options.fixed)
     local max = INT_MAX / fixed
@@ -116,8 +115,6 @@ function mt:floating(options)
         "Chance: Max specified is out of range with fixed. Max should be, at most, " .. max)
     options = helper.init_options(options, { min = min, max = max })
 
-    -- Todo - Make this work!
-    -- options.precision = options.precision or false
     local num = self:integer({min = options.min * fixed, max = options.max * fixed})
     num = num / fixed
     return math.floor(num * 10 ^ options.fixed) / 10 ^ options.fixed
@@ -194,7 +191,7 @@ function mt:prime(options)
     local last_prime = prime_data[#prime_data]
     if options.max > last_prime then
         for i = last_prime + 2, options.max do
-            if self:is_prime(i) then
+            if helper.is_prime(i) then
                 prime_data[#prime_data + 1] = i
             end
         end
@@ -207,27 +204,7 @@ function mt:prime(options)
     end
     return self:pick(target_primes)
 end
---[[
-Determine whether a given number is prime or not.
-]]
-function mt:is_prime(n)
-    if n % 1 or n < 2 then
-        return false
-    end
-    if n % 2 == 0 then
-        return n == 2
-    end
-    if n % 3 == 0 then
-        return n == 3
-    end
-    local m = math.sqrt(n)
-    for i = 5, m, 6 do
-        if n % i == 0 or n % (i + 2) == 0 then
-            return false
-        end
-    end
-    return true
-end
+
 --[[
 *  Return a random hex number as string
      *

@@ -104,6 +104,25 @@ function M.thousand_times_f(f)
     end
 end
 
+function M.is_prime(n)
+    if n % 1 or n < 2 then
+        return false
+    end
+    if n % 2 == 0 then
+        return n == 2
+    end
+    if n % 3 == 0 then
+        return n == 3
+    end
+    local m = math.sqrt(n)
+    for i = 5, m, 6 do
+        if n % i == 0 or n % (i + 2) == 0 then
+            return false
+        end
+    end
+    return true
+end
+
 M.CHARS_LOWER = 'abcdefghijklmnopqrstuvwxyz'
 M.CHARS_UPPER = string.upper(M.CHARS_LOWER)
 M.NUMBERS     = '0123456789'

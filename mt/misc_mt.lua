@@ -35,9 +35,27 @@ end
 -- Hash
 function mt:hash()
 end
-function mt:luhn_check()
+
+function mt:luhn_check(num)
+    num = tostring(num)
+    local check_digit = tonumber(string.sub(num, -1))
+    return check_digit == self:luhn_calculate(string.sub(num, 1, -2))
 end
-function mt:luhn_calculate()
+
+function mt:luhn_calculate(num)
+    num = string.reverse(tostring(num))
+    local sum, digit = 0
+    for i = 1, string.len(num) do
+        digit = tonumber(string.sub(num, i, i))
+        if i % 2 == 1 then
+            digit = digit * 2
+            if digit > 9 then
+                digit = digit - 9
+            end
+        end
+        sum = sum + digit
+    end
+    return (sum * 9) % 10
 end
 
 -- MD5 Hash

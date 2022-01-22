@@ -16,7 +16,31 @@ end
 
   There can be more parameters after these. All additional parameters are provided to the given function
 ]]
-function mt:unique()
+function mt:unique(fn, obj, num, options, ...)
+    assert(type(fn) == "function", "Chance: The first argument must be a function.")
+    local comparator = function(arr, val)
+        for _, v in ipairs(arr) do
+            if v == val then
+                return true
+            end
+        end
+        return false
+    end
+    if options then
+        comparator = options.comparator or comparator
+    end
+    local arr, count, max_duplicates = {}, 0, num * 50
+    while #arr < num do
+        local ret = fn(obj, ...)
+        if not(comparator(arr, ret)) then
+            arr[#arr + 1] = ret
+            -- reset count when unique found
+            count = 0
+        end
+        count = count + 1
+        assert(count <= max_duplicates, "Chance: num is likely too large for sample set")
+    end
+    return arr
 end
 --[[
   Gives an array of n random terms
@@ -39,7 +63,12 @@ function mt:n(fn, obj, n, ...)
     return arr
 end
 -- H/T to SO for this one: http://vq.io/OtUrZ5
-function mt:pad()
+function mt:pad(number, width, pad)
+    -- Default pad to 0 if none provided
+    pad = pad or '0'
+    -- Convert number to a string
+    number = tostring(number)
+    return string.rep(pad, width - string.len(number)) .. number
 end
 
 -- return a random element from a array or a random slice array

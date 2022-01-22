@@ -2,7 +2,6 @@ local Helper = require "utils.helper"
 local Chance = require "chance"
 
 local chance = Chance.new()
-
 local tip = "returns a random boolean"
 local bool = chance:bool()
 assert(type(bool) == "boolean", tip)
@@ -105,35 +104,33 @@ tip = 'character() returns a character'
 local char = chance:character()
 assert(type(char) == "string", tip)
 assert(string.len(char) == 1, tip)
-
 tip = 'character() pulls only from pool, when specified'
 Helper.thousand_times_f(function()
     local char = chance:character({ pool = "abcde"})
-    assert(string.find(char, "[abcde]"), tip)
+    assert(string.match(char, "[abcde]") == char, tip)
 end)
 
 tip = 'character() allows only alpha'
 Helper.thousand_times_f(function()
     local char = chance:character({ alpha = true })
-    assert(string.find(char, "[a-zA-Z]"), tip)
+    assert(string.match(char, "[a-zA-Z]") == char, tip)
 end)
 
 tip = 'character() allows only alphanumeric'
 Helper.thousand_times_f(function()
     local char = chance:character({ alpha = true, numeric = true })
-    assert(string.find(char, "[a-zA-Z0-9]"), tip)
+    assert(string.match(char, "[a-zA-Z0-9]") == char, tip)
 end)
 
 tip = 'character() obeys upper case'
 Helper.thousand_times_f(function()
     local char = chance:character({ alpha = true, casing = "upper" })
-    assert(string.find(char, "[A-Z]"), tip)
+    assert(string.match(char, "[A-Z]") == char, tip)
 end)
-
 tip = 'character() obeys lower case'
 Helper.thousand_times_f(function()
     local char = chance:character({ alpha = true, casing = "lower" })
-    assert(string.find(char, "[a-z]"), tip)
+    assert(string.match(char, "[a-z]") == char, tip)
 end)
 
 tip = 'floating() returns a random floating'
@@ -171,12 +168,14 @@ end)
 
 tip = 'hex() works as expected'
 Helper.thousand_times_f(function()
-    assert(not(string.find(chance:hex(), "[^0-9a-f]")), tip)
+    local hex = chance:hex()
+    assert(string.match(hex, "[0-9a-f]+") == hex, tip)
 end)
 
 tip = 'hex() can take Upper and obey it'
 Helper.thousand_times_f(function()
-    assert(not(string.find(chance:hex({ casing = 'upper' }), "[^0-9A-F]")), tip)
+    local hex = chance:hex({ casing = 'upper' })
+    assert(string.match(hex, "[0-9A-F]+") == hex, tip)
 end)
 
 tip = 'integer() returns a random integer'
@@ -232,7 +231,7 @@ Helper.thousand_times_f(function()
     local letter = chance:letter()
     assert(type(letter) == "string", tip)
     assert(string.len(letter) == 1, tip)
-    assert(string.find(letter, "[a-z]"), tip)
+    assert(string.match(letter, "[a-z]") == letter, tip)
 end)
 
 tip = 'letter() can take upper case'
@@ -240,7 +239,7 @@ Helper.thousand_times_f(function()
     local letter = chance:letter({ casing = "upper" })
     assert(type(letter) == "string", tip)
     assert(string.len(letter) == 1, tip)
-    assert(string.find(letter, "[A-Z]"), tip)
+    assert(string.match(letter, "[A-Z]") == letter, tip)
 end)
 
 tip = 'natural() returns a random natural'
@@ -389,25 +388,25 @@ assert(not(pcall(fn)), tip)
 tip = 'string() returns only letters with alpha'
 Helper.thousand_times_f(function()
     local str = chance:string({ alpha = true })
-    assert(not(string.find(str, "[^a-zA-Z]")), tip)
+    assert(string.match(str, "[a-zA-Z]+") == str, tip)
 end)
 
 tip = 'string() obeys upper case'
 Helper.thousand_times_f(function()
     local str = chance:string({ alpha = true, casing = "upper" })
-    assert(not(string.find(str, "[^A-Z]")), tip)
+    assert(string.match(str, "[A-Z]+") == str, tip)
 end)
 
 tip = 'string() obeys lower case'
 Helper.thousand_times_f(function()
     local str = chance:string({ alpha = true, casing = "lower" })
-    assert(not(string.find(str, "[^a-z]+")), tip)
+    assert(string.match(str, "[a-z]+") == str, tip)
 end)
 
 tip = 'string() obeys symbol'
 Helper.thousand_times_f(function()
     local str = chance:string({ symbols = true })
-    assert(not(string.find(str, "[^%!%@%#%$%%%^%&%*%(%)%[%]]")), tip)
+    assert(string.match(str, "[%!%@%#%$%%%^%&%*%(%)%[%]]+") == str, tip)
 end)
 
 tip = 'string() can take just a min and obey it'
@@ -439,7 +438,7 @@ end)
 tip = 'template() returns alpha numeric substituted'
 Helper.thousand_times_f(function()
     local str = chance:template('ID-{Aa}-{##}')
-    assert(string.find(str, "ID%-[A-Z][a-z]%-[0-9][0-9]"), tip)
+    assert(string.match(str, "ID%-[A-Z][a-z]%-[0-9][0-9]") == str, tip)
 end)
 
 tip = 'template() rejects unknown tokens'
@@ -457,7 +456,7 @@ tip = 'template() rejects invalid escape sequnce'
 assert(not(pcall(fn, "ID-\\Aa")), tip)
 
 tip = 'template() cannot be undefined'
-assert(not(pcall(fn)))
+assert(not(pcall(fn)), tip)
 
 tip = 'template() cannot be empty'
 assert(not(pcall(fn, "")), tip)

@@ -1,6 +1,11 @@
+local helper = require "utils.helper"
+
 local mt = {}
 
 function mt:it_vat()
+    local it_vat = self:natural({ min = 1, max = 1800000 })
+    it_vat = self:pad(it_vat, 7) .. self:pad(self:pick(self:provinces({ country = "it" })).code, 3)
+    return it_vat .. self:luhn_calculate(it_vat)
 end
 
 --[[

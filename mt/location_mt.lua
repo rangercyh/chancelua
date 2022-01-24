@@ -1,3 +1,5 @@
+local helper = require "utils.helper"
+
 local mt = {}
 
 function mt:address()
@@ -34,7 +36,9 @@ function mt:counties()
 end
 function mt:county()
 end
-function mt:provinces()
+function mt:provinces(options)
+    options = helper.init_options(options, { country = "ca" })
+    return self:get("provinces")[string.lower(options.country)]
 end
 function mt:province()
 end

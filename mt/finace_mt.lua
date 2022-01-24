@@ -41,7 +41,9 @@ end
 
 -- return random timezone
 function mt:timezone()
+    return self:pick(self:get("timezones"))
 end
+
 -- Return random correct currency exchange pair (e.g. EUR/USD) or array of currency code
 function mt:currency_pair(return_as_string)
     local currencies = self:unique(self.currency, self, 2, {
@@ -124,8 +126,13 @@ function mt:exp_year()
     })
 end
 
-function mt:vat()
+function mt:vat(options)
+    options = helper.init_options(options, { country = "it" })
+    if string.lower(options.country) == "it" then
+        return self:it_vat()
+    end
 end
+
 --[[
 Generate a string matching IBAN pattern (https://en.wikipedia.org/wiki/International_Bank_Account_Number).
 No country-specific formats support (yet)

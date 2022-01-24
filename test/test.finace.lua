@@ -169,3 +169,9 @@ Helper.thousand_times_f(function()
     assert(type(iban) == "string", tip)
     assert(string.match(iban, "^%u%u%d%d[%u%d]+%d+") == iban, tip)
 end)
+
+chance:timezone()
+
+chance:vat()
+
+

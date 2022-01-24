@@ -123,6 +123,58 @@ chance:template("ID-{Aa}-{##}")
 chance:template("\\\\ID-\\{Aa}\\")
 ```
 
+### basic
+```lua
+local Chance = require "chance"
+local chance = Chance.new()
+-- 随机一个信用卡号，该卡号可以通过卢恩校验
+-- type 卡号类型｛ American Express/amex, Mastercard/mc, Visa/visa ... ｝类型在 data.lua 里 cc_types 表里，name/short name 均可接受
+chance:cc()
+chance:cc({ type = "Mastercard" })
+chance:cc({ type = "visa" })
+-- 随机一个信用卡类型
+-- raw 返回信用卡类型完整信息，见 data.lua cc_types
+chance:cc_type()
+chance:cc_type({ raw = true })
+chance:cc_type({ name = "Visa", raw = true })
+chance:cc_type({ name = "Visa" })
+-- 随机一种货币类型，见 data.lua currency_types
+chance:currency()
+-- 随机一个时区信息，见 data.lua timezones
+chance:timezone()
+-- 随机一个货币对
+-- 默认返回一个table，包含两种货币信息，传 true 返回货币对字符串 EUR/USD
+chance:currency_pair()
+chance:currency_pair(true)
+-- 随机数量美元字符串，$100.00 -$123.44，保留两位小数
+-- min/max 美元范围
+chance:dollar()
+chance:dollar({ max = 20 })
+chance:dollar({ min = 10 })
+chance:dollar({ min = 10, max = 20 })
+-- 随机数量欧元字符串，123.00€ -12.34€,传递参数同 chance.dollar()
+chance:euro()
+chance:euro({ max = 10 })
+chance:euro({ min = 1 })
+chance:euro({ min = 2, max = 5 })
+-- 随机一个未来的时间点，默认是 XX/XXXX 月/年 字符串
+-- raw 返回月、年的 table { month = xx, year = xxxx }
+chance:exp()
+chance:exp({ raw = true })
+-- 随机一个月份
+-- future 是否是未来的月份
+chance:exp_month()
+chance:exp_month({ future = true })
+-- 随机一个未来的年份
+chance:exp_year()
+-- 随机一个增值税号（目前只支持国际的）
+-- country 国家，目前其实只能传 it
+chance:vat()
+chance:vat({ country = "it" })
+-- 随机一个国际银行账户号码
+chance:iban()
+```
+
 ## Notes
 
 之前喜欢使用 chance.js 这个库，但是现在在 lua 上也类似的需求，所以想搞过来用，搜了下发现有一些类似的库，但都不满足我的使用习惯，所以干脆自己 port 一个
@@ -133,4 +185,5 @@ port 过程中有那么几点需要注意的：
 3. js 存在两种位右移运算符 >>(算术右移，首位用符号位填充)、>>>(逻辑右移动，首位用 0 填充)，lua 这边只有一种位右移运算，即逻辑右移，而且 js 是操作 32 位的运算数的，lua 是 64 位，所以单独实现了一套 bit32 的操作，当然 lua5.3 有单独的 bit 库，不过我一向用最新的 lua 所以不考虑
 4. chance.js 实现了一套 MersenneTwister 随机算法，主要是 js 并没有统一的虚拟机实现，所以各家的 Math.random 随机算法各不相同，但是 lua 自己的虚拟机官方就这么一套，lua5.4 使用 xoshiro256** 算法生成 64 位随机数是确定的。所以其实没有必要重新写一套，直接用就好了，我只是顺手也写了一个，方便使用 chance.js 习惯的直接用
 5. chance.js 实现的 MD5 算法也用 lua 重新实现了，base64 也是，不过没有暴露在 chance 的外层接口里，并没有依赖，需要用可以直接暴露出去
-6. make 会遍历 test 目录下的所有 test 用例，chance.js 的绝大部分测试用例都用 assert 复写了，讲道理应该实现一个 lua 的 test 工具，有空再说吧。测试用例中关于随机性随时间变化的例子被移除了，毕竟 lua 没有时间控制函数，后面有空再用协程加一个看看
+6. 去掉了几个 chance.js 里实在我觉得没啥用的接口，纯粹浪费代码行数
+7. make 会遍历 test 目录下的所有 test 用例，chance.js 的绝大部分测试用例都用 assert 复写了，讲道理应该实现一个 lua 的 test 工具，有空再说吧。测试用例中关于随机性随时间变化的例子被移除了，毕竟 lua 没有时间控制函数，后面有空再用协程加一个看看

@@ -4,7 +4,7 @@ local mt = {}
 
 function mt:bool(options)
     -- likelihood of success (true)
-    options = helper.init_options(options, {likelihood = 50})
+    options = helper.init_options(options, { likelihood = 50 })
     -- Note, we could get some minor perf optimizations by checking range
     -- prior to initializing defaults, but that makes code a bit messier
     -- and the check more complicated as we have to check existence of
@@ -19,9 +19,9 @@ end
 
 function mt:falsy(options)
     -- return a random falsy value
-    options = helper.init_options(options, {pool = {false, nil, 0, {}, ''}})
+    options = helper.init_options(options, { pool = {false, nil, 0, {}, ''} })
     local pool = options.pool
-    return pool[self:integer({min = 1, max = #pool})]
+    return pool[self:integer({ min = 1, max = #pool })]
 end
 
 function mt:animal(options)
@@ -74,7 +74,7 @@ function mt:character(options)
 end
 
 function mt:floating(options)
-    options = helper.init_options(options, {fixed = 4})
+    options = helper.init_options(options, { fixed = 4 })
     local INT_MAX = math.tointeger(2 ^ 32)
     local fixed = math.floor(10 ^ options.fixed)
     local max = INT_MAX / fixed
@@ -86,19 +86,19 @@ function mt:floating(options)
         "Chance: Max specified is out of range with fixed. Max should be, at most, " .. max)
     options = helper.init_options(options, { min = min, max = max })
 
-    local num = self:integer({min = options.min * fixed, max = options.max * fixed})
+    local num = self:integer({ min = options.min * fixed, max = options.max * fixed })
     num = num / fixed
     return math.floor(num * 10 ^ options.fixed) / 10 ^ options.fixed
 end
 
 function mt:integer(options)
-    options = helper.init_options(options, {min = helper.INT_MIN, max = helper.INT_MAX})
+    options = helper.init_options(options, { min = helper.INT_MIN, max = helper.INT_MAX })
     assert(options.min <= options.max, "Chance: Min cannot be greater than Max.")
     return math.floor(self:random() * (options.max - options.min + 1) + options.min)
 end
 
 function mt:natural(options)
-    options = helper.init_options(options, {min = 1, max = helper.INT_MAX})
+    options = helper.init_options(options, { min = 1, max = helper.INT_MAX })
     if type(options.numerals) == "number" then
         assert(options.numerals >= 1, "Chance: Numerals cannot be less than one.")
         options.min = 10 ^ (options.numerals - 1)
@@ -110,7 +110,7 @@ function mt:natural(options)
         for _, v in pairs(options.exclude) do
             assert(math.type(v) == "integer", "Chance: exclude must be numbers.")
         end
-        local random = options.min + self:natural({max = options.max - options.min - #options.exclude})
+        local random = options.min + self:natural({ max = options.max - options.min - #options.exclude })
         table.sort(options.exclude)
         for _, v in ipairs(options.exclude) do
             if random < v then
@@ -156,9 +156,9 @@ function mt:hex(options)
 end
 
 function mt:letter(options)
-    options = helper.init_options(options, {casing = "lower"})
+    options = helper.init_options(options, { casing = "lower" })
     local pool = "abcdefghijklmnopqrstuvwxyz"
-    local letter = self:character({pool = pool})
+    local letter = self:character({ pool = pool })
     if options.casing == "upper" then
         letter = string.upper(letter)
     end

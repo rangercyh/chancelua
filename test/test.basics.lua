@@ -37,8 +37,8 @@ end)
 assert(true_count > 900, tip)
 
 tip = "bool() throws an error if likelihood < 0 or > 100"
-assert(not pcall(chance.bool, chance, {likelihood = -23}), tip)
-assert(not pcall(chance.bool, chance, {likelihood = 7933}), tip)
+assert(not pcall(chance.bool, chance, { likelihood = -23 }), tip)
+assert(not pcall(chance.bool, chance, { likelihood = 7933 }), tip)
 
 tip = "Chance() does return differing results if differing seeds provided"
 local chance1 = Chance.new(12345)
@@ -350,12 +350,12 @@ assert(positive_count == 1000, tip)
 
 tip = 'prime() can take just a min and obey it'
 Helper.thousand_times_f(function()
-    assert(chance:prime({min = 5000}) >= 5000, tip)
+    assert(chance:prime({ min = 5000 }) >= 5000, tip)
 end)
 
 tip = 'prime() can take just a max and obey it'
 Helper.thousand_times_f(function()
-    assert(chance:prime({max = 20000}) <= 20000, tip)
+    assert(chance:prime({ max = 20000 }) <= 20000, tip)
 end)
 
 tip = 'prime() can take both a max and min and obey them both'
@@ -365,7 +365,7 @@ Helper.thousand_times_f(function()
 end)
 
 tip = 'set() works as expected'
-local cdata = { lastNames = {'customName', 'testLast'} }
+local cdata = { lastNames = { 'customName', 'testLast' } }
 chance:set(cdata)
 local data = chance:get('lastNames')
 assert(type(data) == "table" and #data == 2, tip)

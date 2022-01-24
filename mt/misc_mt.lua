@@ -9,20 +9,35 @@ end
 
 -- Dice - For all the board game geeks out there
 function mt:d4()
+    return self:natural({ min = 1, max = 4 })
 end
+
 function mt:d6()
+    return self:natural({ min = 1, max = 6 })
 end
+
 function mt:d8()
+    return self:natural({ min = 1, max = 8 })
 end
+
 function mt:d10()
+    return self:natural({ min = 1, max = 10 })
 end
+
 function mt:d12()
+    return self:natural({ min = 1, max = 12 })
 end
+
 function mt:d20()
+    return self:natural({ min = 1, max = 20 })
 end
+
 function mt:d30()
+    return self:natural({ min = 1, max = 30 })
 end
+
 function mt:d100()
+    return self:natural({ min = 1, max = 100 })
 end
 
 function mt:rpg()

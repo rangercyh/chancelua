@@ -123,6 +123,16 @@ function M.is_prime(n)
     return true
 end
 
+function M.split(str, reps)
+    local result = {}
+    if str then
+        string.gsub(str, '[^'..reps..']+', function(w)
+            table.insert(result, w)
+        end)
+    end
+    return result
+end
+
 M.CHARS_LOWER = 'abcdefghijklmnopqrstuvwxyz'
 M.CHARS_UPPER = string.upper(M.CHARS_LOWER)
 M.NUMBERS     = '0123456789'

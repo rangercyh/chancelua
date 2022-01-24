@@ -1,7 +1,9 @@
 local mt = {}
 
-function mt:capitalize()
+function mt:capitalize(word)
+    return string.upper(string.sub(word, 1, 1)) .. string.sub(word, 2)
 end
+
 function mt:mixin()
 end
 --[[
@@ -75,7 +77,7 @@ end
 function mt:pick(arr, count)
     assert(#arr > 0, "Chance: Cannot pick() from an empty array")
     if not count or count == 1 then
-        return arr[self:natural({max = #arr})]
+        return arr[self:natural({ max = #arr })]
     else
         return table.move(self:shuffle(arr), 1, count, 1, {})
     end
@@ -91,7 +93,7 @@ end
 function mt:shuffle(t)
     local n = #t
     for i = 1, n do
-        local j = self:natural({max = n})
+        local j = self:natural({ max = n })
         t[i], t[j] = t[j], t[i]
     end
     return t

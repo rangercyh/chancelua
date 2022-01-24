@@ -174,4 +174,4 @@ chance:timezone()
 
 chance:vat()
 
-
+print("-------->>>>>>>> finace test ok <<<<<<<<--------")

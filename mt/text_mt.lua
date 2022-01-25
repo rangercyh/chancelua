@@ -18,7 +18,7 @@ function mt:syllable(options)
     local text = ""
     local chr
     -- I'm sure there's a more elegant way to do this, but this works decently well.
-    for _ = 1, length do
+    for i = 1, length do
         if i == 1 then
             -- First character can be anything
             chr = self:character({ pool = all })

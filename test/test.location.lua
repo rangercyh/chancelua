@@ -2,9 +2,8 @@ local Helper = require "utils.helper"
 local Chance = require "chance"
 
 local chance = Chance.new()
---[=[
 local tip = 'address() returns a string'
-assert(type(chance:address) == "string", tip)
+assert(type(chance:address()) == "string", tip)
 
 tip = 'address() starts with a number'
 Helper.thousand_times_f(function()
@@ -52,7 +51,7 @@ tip = 'areacode() can take parens'
 Helper.thousand_times_f(function()
     local areacode = chance:areacode({ parens = false })
     assert(type(areacode) == "string", tip)
-    assert(string.match(areacode, "^%([2-9][0-8][0-9]%)$") == areacode, tip)
+    assert(string.match(areacode, "^[2-9][0-8][0-9]$") == areacode, tip)
 end)
 
 tip = 'city() looks right'
@@ -218,7 +217,7 @@ end)
 
 tip = 'latitude() will obey DMS format'
 Helper.thousand_times_f(function()
-    local latitude = chance:latitude({ format = "dds" })
+    local latitude = chance:latitude({ format = "dms" })
     assert(type(latitude) == "string", tip)
     assert(string.find(tostring(latitude), "[°]"), tip)
     assert(string.find(tostring(latitude), "[’]"), tip)
@@ -272,14 +271,13 @@ end)
 
 tip = 'longitude() will obey DMS format'
 Helper.thousand_times_f(function()
-    local longitude = chance:longitude({ format = "dds" })
+    local longitude = chance:longitude({ format = "dms" })
     assert(type(longitude) == "string", tip)
     assert(string.find(longitude, "[°]"), tip)
     assert(string.find(longitude, "[’]"), tip)
     assert(string.find(longitude, "[”]"), tip)
 end)
 
-]=]
 tip = 'phone() returns a string'
 assert(type(chance:phone()) == "string", tip)
 
@@ -291,15 +289,14 @@ tip = 'phone() obeys formatted option'
 Helper.thousand_times_f(function()
     local phone = chance:phone({ formatted = false })
     assert(type(phone) == "string", tip)
-    print(phone)
-    assert(string.match(phone, "^[2-9][0-8]%d[2-9]%d+$") == phone, tip)
+    assert(string.match(phone, "^[2-9][0-8]%d[2-9]%d%d%d%d%d%d$") == phone, tip)
 end)
 
 tip = 'phone() obeys formatted option and parens option'
 Helper.thousand_times_f(function()
     local phone = chance:phone({ formatted = false, parens = true })
     assert(type(phone) == "string", tip)
-    assert(string.match(phone, "^[2-9][0-8]%d[2-9]%d+$") == phone, tip)
+    assert(string.match(phone, "^[2-9][0-8]%d[2-9]%d%d%d%d%d%d$") == phone, tip)
 end)
 
 tip = "phone() obeys exampleNumber option"
@@ -313,7 +310,7 @@ tip = "phone() obeys formatted option and exampleNumber option"
 Helper.thousand_times_f(function()
     local phone = chance:phone({ example_number = true, formatted = false })
     assert(type(phone) == "string", tip)
-    assert(string.match(phone, "^555[2-9]%d+$") == phone, tip)
+    assert(string.match(phone, "^555[2-9]%d%d%d%d%d%d$") == phone, tip)
 end)
 
 tip = 'phone() with uk option works'
@@ -322,323 +319,170 @@ assert(type(chance:phone({ country = "uk" })) == "string", tip)
 tip = 'phone() with uk option works and mobile option'
 assert(type(chance:phone({ country = "uk", mobile = true })) == "string", tip)
 
---[=[
 tip = 'phone() with uk country looks right'
-assert()
-    t.true(phoneNumber.isValid(chance.phone({ country: 'uk' })))
-})
+assert(Helper.phone_vaild(chance:phone({ country = "uk" })), tip)
 
-test('phone() with uk country unformatted looks right', t => {
-    t.true(phoneNumber.isValid(phoneNumber.format(chance.phone({
-        country: 'uk',
-        formatted: false
-    }))))
-})
+tip = 'phone() with uk country unformatted looks right'
+assert(Helper.phone_vaild(Helper.phone_format(chance:phone({
+    country = "uk",
+    formatted = false,
+}))), tip)
 
-test('phone() with uk country and mobile option looks right', t => {
-    _.times(1000, () => {
-        t.true(phoneNumber.isValid(chance.phone({
-            country: 'uk',
-            mobile: true
-        })))
+tip = 'phone() with uk country and mobile option looks right'
+Helper.thousand_times_f(function()
+    local phone = chance:phone({
+        country = "uk",
+        mobile = true,
     })
-})
+    assert(Helper.phone_vaild(phone), tip)
+end)
 
-test('phone() with uk country and mobile option unformatted looks right', t => {
-    _.times(1000, () => {
-        t.true(phoneNumber.isValid(phoneNumber.format(chance.phone({
-            country: 'uk',
-            mobile: true,
-            formatted: false
-        }))))
-    })
-})
+tip = 'phone() with uk country and mobile option unformatted looks right'
+Helper.thousand_times_f(function()
+    assert(Helper.phone_vaild(Helper.phone_format(chance:phone({
+        country = "uk",
+        mobile = true,
+        formatted = false,
+    }))), tip)
+end)
 
-test('phone() with fr country works', t => {
-    t.true(_.isString(chance.phone({ country: 'fr' })))
-})
+tip = 'phone() with fr country works'
+assert(type(chance:phone({ country = "fr" })) == "string", tip)
 
-test('phone() with fr country works with mobile option', t => {
-    t.true(_.isString(chance.phone({ country: 'fr', mobile: true })))
-})
+tip = 'phone() with fr country works with mobile option'
+assert(type(chance:phone({ country = "fr", mobile = true })), tip)
 
-test('phone() with fr country looks right', t => {
-    _.times(1000, () => {
-        t.true(/0[123459] .. .. .. ../.test(chance.phone({ country: 'fr' })))
-    })
-})
+tip = 'phone() with fr country looks right'
+Helper.thousand_times_f(function()
+    local phone = chance:phone({ country = "fr" })
+    assert(string.match(phone, "0[123459] .. .. .. ..") == phone, tip)
+end)
 
-test('phone() with fr country looks right unformatted', t => {
-    _.times(1000, () => {
-        t.true(/0........./.test(chance.phone({
-            country: 'fr',
-            formatted: false
-        })))
-    })
-})
+tip = 'phone() with fr country looks right unformatted'
+Helper.thousand_times_f(function()
+    local phone = chance:phone({ country = "fr", formatted = false })
+    assert(string.match(phone, "0.........") == phone, tip)
+end)
 
-test('phone() with fr country on mobile looks right', t => {
-    _.times(1000, () => {
-        t.true(/0[67] .. .. .. ../.test(chance.phone({
-            country: 'fr',
-            mobile: true
-        })))
-    })
-})
+tip = 'phone() with fr country on mobile looks right'
+Helper.thousand_times_f(function()
+    local phone = chance:phone({ country = "fr", mobile = true })
+    assert(string.match(phone, "0[67] .. .. .. ..") == phone, tip)
+end)
 
-test('phone() with fr country on mobile, unformatted looks right', t => {
-    _.times(1000, () => {
-        t.true(/0[67]......../.test(chance.phone({
-            country: 'fr',
-            mobile: true,
-            formatted: false
-        })))
-    })
-})
+tip = 'phone() with fr country on mobile, unformatted looks right'
+Helper.thousand_times_f(function()
+    local phone = chance:phone({ country = "fr", mobile = true, formatted = false })
+    assert(string.match(phone, "0[67]........") == phone, tip)
+end)
 
-test('phone() with br country option works', t => {
-    t.true(_.isString(chance.phone({ country: 'br' })))
-})
+tip = 'phone() with br country option works'
+assert(type(chance:phone({ country = "br" })), tip)
 
-test('phone() with br country and mobile option works', t => {
-    t.true(_.isString(chance.phone({ country: 'br', mobile: true })))
-})
+tip = 'phone() with br country and mobile option works'
+assert(type(chance:phone({ country = "br", mobile = true })), tip)
 
-test('phone() with br country and formatted false option return a correct format', t => {
-    t.true(/([0-9]{2})([2-5]{1})([0-9]{3})([0-9]{4})/.test(chance.phone({
-        country: 'br',
-        mobile: false,
-        formatted: false
-    })))
-})
+tip = 'phone() with br country and formatted false option return a correct format'
+local phone = chance:phone({ country = "br", mobile = false, formatted = false })
+assert(string.match(phone, "%d%d[2-5]%d%d%d%d%d%d%d") == phone, tip)
 
-test('phone() with br country, formatted false and mobile option return a correct format', t => {
-    t.true(/([0-9]{2})\9([0-9]{4})([0-9]{4})/.test(chance.phone({
-        country: 'br',
-        mobile: true,
-        formatted: false
-    })))
-})
+tip = 'phone() with br country, formatted false and mobile option return a correct format'
+local phone = chance:phone({ country = "br", mobile = true, formatted = false })
+assert(string.match(phone, "%d%d9%d%d%d%d%d%d%d%d") == phone, tip)
 
-test('phone() with br country and formatted option apply the correct mask', t => {
-    t.true(/\(([0-9]{2})\) ([2-5]{1})([0-9]{3})\-([0-9]{4})/.test(chance.phone({
-        country: 'br',
-        mobile: false,
-        formatted: true
-    })))
-})
+tip = 'phone() with br country and formatted option apply the correct mask'
+local phone = chance:phone({ country = "br", mobile = false, formatted = true })
+assert(string.match(phone, "%(%d%d%) [2-5]%d%d%d%-%d%d%d%d") == phone, tip)
 
-test('phone() with br country, formatted and mobile option apply the correct mask', t => {
-    t.true(/\(([0-9]{2})\) 9([0-9]{4})\-([0-9]{4})/.test(chance.phone({
-        country: 'br',
-        mobile: true,
-        formatted: true
-    })))
-})
+tip = 'phone() with br country, formatted and mobile option apply the correct mask'
+Helper.thousand_times_f(function()
+    local phone = chance:phone({ country = "br", mobile = true, formatted = true })
+    assert(string.match(phone, "%(%d%d%) 9%d%d%d%d%-%d%d%d%d") == phone, tip)
+end)
 
-// chance.postal()
-test('postal() returns a valid basic postal code', t => {
-    _.times(1000, () => {
-        let postal = chance.postal()
-        t.is(postal.length, 7)
-        postal.split('').map((char) => {
-            t.is(char.toUpperCase(), char)
-        })
-    })
-})
+tip = 'postal() returns a valid basic postal code'
+Helper.thousand_times_f(function()
+    local postal = chance:postal()
+    assert(string.len(postal) == 7, tip)
+    for i = 1, 7 do
+        local c = string.sub(postal, i, i)
+        assert(string.upper(c) == c, tip)
+    end
+end)
 
-test('postcode() returns a valid basic postcode', t => {
-    _.times(10, () => {
-        let postcode = chance.postcode();
-        t.regex(postcode, /^[A-Z]{1,2}\d[A-Z\d]? \d[A-Z]{2}$/);
-    })
-})
+tip = 'postcode() returns a valid basic postcode'
+Helper.thousand_times_f(function()
+    local postcode = chance:postcode()
+    assert(string.match(postcode, "^%u%u?%d[%u%d]? %d%u%u$") == postcode, tip)
+end)
 
-// chance.province()
-test('province() returns a random (short) province name', t => {
-    _.times(1000, () => t.true(chance.province().length < 3))
-})
+tip = 'province() returns a random (short) province name'
+Helper.thousand_times_f(function()
+    assert(string.len(chance:province()) < 3, tip)
+end)
 
-test('province() can return a long random province name', t => {
-    _.times(1000, () => t.true(chance.province({ full: true }).length > 2))
-})
+tip = 'province() can return a long random province name'
+Helper.thousand_times_f(function()
+    assert(string.len(chance:province({ full = true })) > 2, tip)
+end)
 
-test('province() can return a random long "it" province', t => {
-    _.times(1000, () => {
-        t.true(chance.province({country: 'it', full: true }).length > 2)
-    })
-})
+tip = 'province() can return a random long "it" province'
+Helper.thousand_times_f(function()
+    assert(string.len(chance:province({ country = "it", full = true })) > 2, tip)
+end)
 
-// chance.provinces()
-test('provinces() returns an array of provinces', t => {
-    t.true(_.isArray(chance.provinces()))
-})
+tip = 'state() returns a random (short) state name'
+Helper.thousand_times_f(function()
+    assert(string.len(chance:state()) < 3, tip)
+end)
 
-test('provinces() supports internationalization', t => {
-    t.not(chance.provinces(), chance.provinces({ country: 'it' }))
-})
+tip = 'state() can take a country and return a state'
+Helper.thousand_times_f(function()
+    assert(string.len(chance:state({ country = "it" })) == 3, tip)
+end)
 
-// chance.state()
-test('state() returns a random (short) state name', t => {
-    _.times(1000, () => t.true(chance.state().length < 3))
-})
+tip = 'state() can return full state name'
+Helper.thousand_times_f(function()
+    assert(string.len(chance:state({ full = true })) > 2, tip)
+end)
 
-test('state() can take a country and return a state', t => {
-    _.times(1000, () => t.true(chance.state({ country: 'it' }).length === 3))
-})
+tip = 'state() with country returns a long state name'
+Helper.thousand_times_f(function()
+    assert(string.len(chance:state({ country = "it", full = true })) > 2, tip)
+    assert(string.len(chance:state({ country = "uk", full = true })) > 2, tip)
+end)
 
-test('state() can return full state name', t => {
-    _.times(1000, () => {
-        t.true(chance.state({
-            full: true
-        }).length > 2)
-    })
-})
+tip = 'street() works'
+Helper.thousand_times_f(function()
+    assert(type(chance:street()) == "string", tip)
+end)
 
-test('state() with country returns a long state name', t => {
-    _.times(1000, () => {
-        t.true(chance.state({
-            country: 'it',
-            full: true
-        }).length > 2)
-    })
-    _.times(1000, () => {
-        t.true(chance.state({
-            country: 'uk',
-            full: true
-        }).length > 2)
-    })
-})
+tip = 'street() works with it country'
+Helper.thousand_times_f(function()
+    assert(type(chance:street({ country = "it" })) == "string", tip)
+end)
 
-// chance.states()
-test('states() returns an array of states', t => {
-    t.true(_.isArray(chance.states()))
-})
+tip = 'street_suffix() returns a single suffix'
+Helper.thousand_times_f(function()
+    local suffix = chance:street_suffix()
+    assert(type(suffix) == "table", tip)
+    assert(type(suffix.name) == "string", tip)
+    assert(type(suffix.abbreviation) == "string", tip)
+end)
 
-test('states() returns all 50 states and DC', t => {
-    t.is(chance.states().length, 51)
-})
+tip = 'zip() returns a valid basic zip code'
+Helper.thousand_times_f(function()
+    local zip = chance:zip()
+    assert(string.len(zip) == 5, tip)
+    assert(string.match(zip, "^%d%d%d%d%d$") == zip or string.match(zip, "^%d%d%d%d%d%-%d%d%d%d$") == zip, tip)
+end)
 
-test('states() with territories returns 50 US states, DC, and 7 US territories', t => {
-    t.is(chance.states({
-        territories: true
-    }).length, 58)
-})
-
-test('states() without us states and dc returns 7 US territories', t => {
-    t.is(chance.states({
-        territories: true,
-        us_states_and_dc: false
-    }).length, 7)
-})
-
-test('states() with armed forces returns 50 states, DC, and 3 armed forces military states', t => {
-    t.is(chance.states({
-        armed_forces: true
-    }).length, 54)
-})
-
-test('states() with armed forces without states returns 3 armed forces states', t => {
-    t.is(chance.states({
-        armed_forces: true,
-        us_states_and_dc: false
-    }).length, 3)
-})
-
-test('states() with all options returns 61 items', t => {
-    t.is(chance.states({
-        territories: true,
-        armed_forces: true
-    }).length, 61)
-})
-
-test('states() without states returns 7 territories and 3 armed forces states', t => {
-    t.is(chance.states({
-        territories: true,
-        armed_forces: true,
-        us_states_and_dc: false
-    }).length, 10)
-})
-
-test('states() with country of "it" returns 20 regions', t => {
-    t.is(chance.states({
-        country: 'it'
-    }).length, 20)
-})
-
-test('states() with country of "uk" returns 129 UK counties', t => {
-    t.is(chance.states({
-        country: 'uk'
-    }).length, 129)
-})
-
-test('states() with country of "mx" returns 32 MX states', t => {
-    t.is(chance.states({
-        country: 'mx'
-    }).length, 32)
-})
-
-// chance.street()
-test('street() works', t => {
-    _.times(100, () => t.is(typeof chance.street(), 'string'))
-})
-
-test('street() works with it country', t => {
-    _.times(100, () => t.is(typeof chance.street({ country: 'it' }), 'string'))
-})
-
-// chance.street_suffix()
-test('street_suffix() returns a single suffix', t => {
-    _.times(1000, () => {
-        let suffix = chance.street_suffix()
-        t.is(typeof suffix, 'object')
-        t.is(typeof suffix.name, 'string')
-        t.is(typeof suffix.abbreviation, 'string')
-    })
-})
-
-// chance.street_suffixes()
-test('street_suffixes() returns the suffix array', t => {
-    let suffixes = chance.street_suffixes()
-    t.true(_.isArray(suffixes))
-    suffixes.map((suffix) => {
-        t.truthy(suffix.name)
-        t.truthy(suffix.abbreviation)
-    })
-})
-
-test('street_suffixes() are short', t => {
-    let suffixes = chance.street_suffixes()
-    suffixes.map((suffix) => {
-        t.true(suffix.abbreviation.length < 5)
-    })
-})
-
-test('street_suffixes() are longish', t => {
-    let suffixes = chance.street_suffixes()
-    suffixes.map((suffix) => {
-        t.true(suffix.name.length > 2)
-    })
-})
-
-// chance.zip()
-test('zip() returns a valid basic zip code', t => {
-    _.times(1000, () => {
-        let zip = chance.zip()
-        t.is(zip.length, 5)
-        t.true(/(^\d{5}$)|(^\d{5}-\d{4}$)/.test(zip))
-    })
-})
-
-test('zip() returns a valid zip+4 code', t => {
-    _.times(1000, () => {
-        let zip = chance.zip({ plusfour: true })
-        t.is(zip.length, 10)
-        t.true(/(^\d{5}$)|(^\d{5}-\d{4}$)/.test(zip))
-    })
-})
+tip = 'zip() returns a valid zip+4 code'
+Helper.thousand_times_f(function()
+    local zip = chance:zip({ plusfour = true })
+    assert(string.len(zip) == 10, tip)
+    assert(string.match(zip, "^%d%d%d%d%d$") == zip or string.match(zip, "^%d%d%d%d%d%-%d%d%d%d$") == zip, tip)
+end)
 
 print("-------->>>>>>>> location test ok <<<<<<<<--------")
-
---]=]
 

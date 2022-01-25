@@ -175,6 +175,117 @@ chance:vat({ country = "it" })
 chance:iban()
 ```
 
+### location
+```lua
+local Chance = require "chance"
+local chance = Chance.new()
+-- 随机一个地址
+-- country 国家
+-- syllables 街道单词数量
+-- short_suffix 缩写
+chance:address()
+chance:address({ country = "us" })
+chance:address({ country = "us", syllables = 2 })
+chance:address({ country = "us", syllables = 2, short_suffix = true })
+chance:address({ short_suffix = true })
+-- 随机一个海拔高度
+-- min/max 标识范围
+-- fixed 标识精度
+chance:altitude()
+chance:altitude({ min = 0 })
+chance:altitude({ min = 1, max = 8848 })
+chance:altitude({ min = 1, max = 8848, fixed = 5 })
+-- 随机一个区号
+-- parens 是否带括号
+-- example_number 返回固定区号 (555)
+chance:areacode()
+chance:areacode({ parens = false })
+chance:areacode({ example_number = true })
+-- 随机一个城市
+chance:city()
+-- 随机一个坐标
+-- min/max/fixed 标识范围跟精度
+-- format dms度数分秒 ddm度数十进制分 dd十进制度
+chance:coordinates()
+chance:coordinates({ min = -90, max = 90, fixed = 5 })
+chance:coordinates({ format = "dd" })
+-- 随机一个国家
+-- raw 返回完整的国家信息
+-- full 返回全名或者缩写
+chance:country()
+chance:country({ full = true })
+chance:country({ raw = true })
+-- 随机一个深度
+-- min/max/fixed 标识范围跟精度
+chance:depth()
+chance:depth({ min = -10094, max = 0 })
+chance:depth({ fixed = 5 })
+-- 随机一个 geohash 码
+-- length 长度
+chance:geohash()
+chance:geohash({ length = 7 })
+-- 随机一个 geojson 地址
+-- min/max/fixed 标识范围跟精度
+chance:geojson()
+chance:geojson({ min = 1, max = 20, fixed = 3 })
+-- 随机一个纬度
+-- min/max/fixed 标识范围跟精度
+-- format dms度数分秒 ddm度数十进制分 dd十进制度
+chance:latitude()
+chance:latitude({ min = 1, max = 90, fixed = 3, format = "dms" })
+-- 随机一个经度
+-- min/max/fixed 标识范围跟精度
+-- format dms度数分秒 ddm度数十进制分 dd十进制度
+chance:longitude()
+chance:longitude({ min = 1, max = 90, fixed = 3, format = "dms" })
+-- 随机一个电话号码
+-- formatted 是否格式化
+-- mobile 手机号
+-- example_number 固定 555 区号
+-- parens 区号是否带括号
+-- country 国家缩写
+chance:phone()
+chance:phone({ country = "uk" })
+chance:phone({ formatted = true, mobile = true, parens = false, example_number = true })
+-- 随机一个邮局
+chance:postal()
+-- 随机一个邮编
+chance:postcode()
+-- 随机一个 county
+-- country 国家
+chance:county()
+chance:county({ country = "uk" })
+-- 随机一个省份
+-- country 国家
+chance:province()
+chance:province({ country = "ca" })
+-- 随机一个州
+-- full 全称还是缩写
+-- us_states_and_dc 是否包含首府
+-- territories 是否包含非本土领土
+-- armed_forces 是否包含军事基地
+chance:state()
+chance:state({ country = "us" })
+chance:state({ country = "us", us_states_and_dc = true, territories = true, armed_forces = true })
+chance:state({ country = "us", full = true })
+-- 随机一个街道
+-- country 国家
+-- syllables 街道单词数
+-- short_suffix 显示街道缩写还是全称
+chance:street()
+chance:street({ country = "us" })
+chance:street({ syllables = 2 })
+chance:street({ short_suffix = true })
+-- 随机一个街道后缀
+-- country 国家
+chance:street_suffix()
+chance:street_suffix({ country = "us" })
+-- 随机一个 zip 码
+-- plusfour 是否带 4 位后缀
+chance:zip()
+chance:zip({ plusfour = true })
+```
+
 ## Notes
 
 之前喜欢使用 chance.js 这个库，但是现在在 lua 上也类似的需求，所以想搞过来用，搜了下发现有一些类似的库，但都不满足我的使用习惯，所以干脆自己 port 一个

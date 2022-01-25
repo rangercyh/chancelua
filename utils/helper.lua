@@ -5,7 +5,7 @@ function M.init_options(options, defaults)
     options = options or {}
     if defaults then
         for k, v in pairs(defaults) do
-            if not(options[k]) then
+            if options[k] == nil then
                 options[k] = v
             end
         end
@@ -133,6 +133,75 @@ function M.split(str, reps)
     return result
 end
 
+local b = {
+    "011# ### ####", "01#1 ### ####", "013873 #####", "015242 #####",
+    "015394 #####", "015395 #####", "015396 #####", "016973 #####",
+    "016974 #####", "016977 ####", "016977 #####", "017683 #####",
+    "017684 #####", "017687 #####", "019467 #####", "01### #####",
+    "01### ######", "02# #### ####", "03## ### ####", "05### ######",
+    "0500 ######", "07### ######", "08## ### ###", "08## ### ####",
+    "09## ### ####"
+}
+local c = {}
+local function format_phone()
+    local f1 = function(s)
+        local len = string.len(s)
+        local r = ""
+        for _ = 1, len do
+            r = r .. "%d"
+        end
+        return r
+    end
+    local f2 = function(s)
+        local len = string.len(s)
+        local r = ""
+        for i = 1, len do
+            local cc = string.sub(s, i, i)
+            r = r .. (cc == "#" and "%d" or cc)
+        end
+        return r
+    end
+    for i, v in ipairs(b) do
+        local r = {}
+        for w in string.gmatch(v, "%g+") do
+            r[#r + 1] = (string.match(w, "#+") == w) and f1(w) or f2(w)
+        end
+        c[i] = "^" .. table.concat(r, " ") .. "$"
+    end
+end
+format_phone()
+
+function M.phone_format(phone)
+    for i = #c, 1, -1 do
+        local d = c[i]
+        local f = b[i]
+        local temp = string.gsub(phone, "[%[%(%)%]%-_%u%l ]", "")
+        local e = {}
+        for w in string.gmatch(temp, ".") do
+            e[#e + 1] = w
+        end
+        for g = 1, string.len(f) do
+            if string.sub(f, g, g) == " " then
+                table.insert(e, g, ' ')
+            end
+        end
+        e = table.concat(e)
+        if string.match(e, d) == e then
+            return e
+        end
+    end
+    return false
+end
+
+function M.phone_vaild(phone)
+    for _, v in pairs(c) do
+        if string.match(phone, v) == phone then
+            return true
+        end
+    end
+    return false
+end
+
 M.CHARS_LOWER = 'abcdefghijklmnopqrstuvwxyz'
 M.CHARS_UPPER = string.upper(M.CHARS_LOWER)
 M.NUMBERS     = '0123456789'
@@ -141,3 +210,4 @@ M.INT_MAX     = 2^53
 M.INT_MIN     = -2^53
 
 return M
+

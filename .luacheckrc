@@ -4,7 +4,7 @@ color = true
 std = "max"
 
 -- MaCabe 循环复杂度
-max_cyclomatic_complexity = 10
+max_cyclomatic_complexity = 12
 
 include_files = {
     "chance.lua",

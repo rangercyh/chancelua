@@ -12,3 +12,5 @@ all: luacheck
 
 luacheck:
 	luacheck --config .luacheckrc ./
+
+

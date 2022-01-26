@@ -282,22 +282,94 @@ chance:zip({ plusfour = true })
 
 ### person
 ```lua
+-- 随机一个年龄
+-- type 不同年龄段 child/teen/adult/senior/all
 chance:age()
+chance:age({ type = "child" })
+-- 随机一个生日日期
+-- type 标识根据不同年龄段返回可能的生日，同 chance:age()
+-- str 标识是否返回 os.date() 的字符串，格式 "%Y-%m-%d %H:%M:%S"，否则返回 os.date() 的 table
 chance:birthday()
+chance:birthday({ type = "teen" })
+chance:birthday({ str = true })
+chance:birthday({ type = "child", str = true })
+-- 随机一个巴西纳税号
+-- formatted 标识是否纯数字
 chance:cpf()
+chance:cpf({ formatted = true })
+-- 随机一个 first name
+-- gender 性别 Male/Female 大小写均可
+-- nationality 国家 en/it/nl/fr
 chance:first()
+chance:first({ gender = "male" })
+chance:first({ nationality = "en" })
+chance:first({ gender = "male", nationality = "en" })
+-- 随机一个职业
+-- rank 是否带上级别
 chance:profession()
+chance:profession({ rank = true })
+-- 随机一个公司
 chance:company()
+-- 随机一个性别
+-- extra_genders 自定义添加的随机性别
 chance:gender()
+chance:gender({ extra_genders = { "Unknown", "Transgender" } })
+-- 随机一个 last name
+-- nationality 国家 en/it/nl/fr
 chance:last()
+chance:last({ nationality = "en" })
+-- 随机一个 Israel ID
 chance:israelId()
+-- 随机一个护照码
+-- first
+-- last
+-- passport_number
+-- dob
+-- expiry
+-- gender F/M
+-- issuer
+-- nationality
 chance:mrz()
+chance:mrz({
+    first =  'Joanne',
+    last =  'Folks',
+    gender = 'F',
+    dob = '690206',
+    expiry = '160101',
+    passport_number = '232112613',
+})
+-- 随机一个名字
+-- middle 中间名字有吗
+-- middle_initial 中间名字大写
+-- prefix 前缀
+-- suffix 后缀
 chance:name()
+chance:name({ middle = true })
+chance:name({ middle_initial = true })
+chance:name({ prefix = true })
+chance:name({ suffix = true })
+-- 随机一个名字前缀
+-- gender 性别 male/female/all
 chance:prefix()
+chance:prefix({ gender = "all" })
+-- 随机一个 HIDN
 chance:HIDN()
+-- 随机一个 ssn
+-- ssn_four 4位
+-- dashes 是否有连接符
 chance:ssn()
+chance:ssn({ ssn_four = false, dashes = true })
+-- 随机一个 aadhar
+-- only_last_four 是否只需要最后 4 位
+-- separated_by_whitespace 是否用空格分开
 chance:aadhar()
+chance:aadhar({ only_last_four = true })
+chance:aadhar({ only_last_four = false, separated_by_whitespace = true })
+-- 随机一个名字后缀
+-- full 全称还是缩写
 chance:suffix()
+chance:suffix({ full = true })
+-- 随机一个国家
 chance:nationality()
 ```
 

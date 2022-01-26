@@ -450,6 +450,20 @@ chance:lorem_picsum({ greyscale = true })
 chance:lorem_picsum({ blurred = true })
 ```
 
+### mobile
+```lua
+-- 随机一个 android id
+chance:android_id()
+-- 随机一个 apple token
+chance:apple_token()
+-- 随机一个 wp8 anid2
+chance:wp8_anid2()
+-- 随机一个 wp7 anid
+chance:wp7_anid()
+-- 随机一个 bb pin
+chance:bb_pin()
+```
+
 ## Notes
 
 之前喜欢使用 chance.js 这个库，但是现在在 lua 上也类似的需求，所以想搞过来用，搜了下发现有一些类似的库，但都不满足我的使用习惯，所以干脆自己 port 一个

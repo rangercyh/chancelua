@@ -65,7 +65,19 @@ function mt:rpg(thrown, options)
 end
 
 -- Guid
-function mt:guid()
+function mt:guid(options)
+    options = helper.init_options(options, { version = 5 })
+    local guid_pool = "abcdef1234567890"
+    local variant_pool = "ab89"
+    return self:string({ pool = guid_pool, length = 8 }) .. "-" ..
+           self:string({ pool = guid_pool, length = 4 }) .. "-" ..
+           -- The Version
+           options.version ..
+           self:string({ pool = guid_pool, length = 3 }) .. "-" ..
+           -- The Variant
+           self:string({ pool = variant_pool, length = 1 }) ..
+           self:string({ pool = guid_pool, length = 3 }) .. "-" ..
+           self:string({ pool = guid_pool, length = 12 })
 end
 
 -- Hash

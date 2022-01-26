@@ -84,8 +84,11 @@ function mt:pick(arr, count)
 end
 
 -- Given an array, returns a single random element
-function mt:pickone()
+function mt:pickone(arr)
+    assert(#arr > 0, "Chance: Cannot pickone() from an empty array")
+    return arr[self:natural({ max = #arr })]
 end
+
 -- Given an array, returns a random set with 'count' elements
 function mt:pickset()
 end
@@ -100,7 +103,45 @@ function mt:shuffle(t)
 end
 
 -- Returns a single item from an array with relative weighting of odds
-function mt:weighted()
+function mt:weighted(arr, weights, trim)
+    assert(#arr == #weights, "Chance: Length of array and weights must match")
+    -- scan weights array and sum valid entries
+    local sum = 0
+    for i = 1, #weights do
+        local val = weights[i]
+        assert(type(val) == "number", "Chance: All weights must be numbers")
+        if val > 0 then
+            sum = sum + val
+        end
+    end
+    assert(sum > 0, "Chance: No valid entries in array weights")
+    -- select a value within range
+    local selected = self:random() * sum
+    -- find array entry corresponding to selected value
+    local total = 0
+    local chosen_idx
+    local last_good_idx = -1
+    for i = 1, #weights do
+        local val = weights[i]
+        total = total + val
+        if val > 0 then
+            if selected <= total then
+                chosen_idx = i
+                break
+            end
+            last_good_idx = i
+        end
+        -- handle any possible rounding error comparison to ensure something is picked
+        if i == #weights then
+            chosen_idx = last_good_idx
+        end
+    end
+    local chosen = arr[chosen_idx]
+    if trim then
+        table.remove(arr, chosen_idx)
+        table.remove(weights, chosen_idx)
+    end
+    return chosen
 end
 
 return mt

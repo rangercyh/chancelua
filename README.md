@@ -373,6 +373,83 @@ chance:suffix({ full = true })
 chance:nationality()
 ```
 
+### web
+```lua
+-- 随机一种颜色
+-- format 颜色格式 hex/shorthex/rgb/rgba/0x
+-- grayscale 是否带灰度值
+-- casing 十六进制大小写
+chance:color()
+chance:color({ format = "hex", grayscale = true })
+chance:color({ format = "shorthex" })
+chance:color({ format = "rgb", grayscale = true })
+chance:color({ format = "rgba" })
+chance:color({ format = "0x" })
+chance:color({ format = "hex", casing = "upper" })
+-- 随机一个域名
+-- tld 域名后缀
+chance:domain()
+chance:domain({ tld = "com" })
+-- 随机一个邮箱
+-- domain 邮箱域名
+-- length 邮箱名长度
+chance:email()
+chance:email({ domain = "victorquinn.com" })
+chance:email({ length = 5 })
+-- 随机一个 facebook id
+chance:fbid()
+-- 随机一个 google analytics 帐号
+chance:google_analytics()
+-- 随机一个 hashtag
+chance:hashtag()
+-- 随机一个 ip 地址
+chance:ip()
+-- 随机一个 ipv6 地址
+chance:ipv6()
+-- 随机一个 klout
+chance:klout()
+-- 随机一个 mac 地址
+-- delimiter 地址拼接符
+chance:mac()
+chance:mac({ delimiter = "." })
+-- 随机一个版本号
+-- range 版本号前缀
+-- include_prerelease 是否包含预发布标签 dev/beta/alpha
+chance:semver()
+chance:semver({ range = "banana" })
+chance:semver({ include_prerelease = true })
+-- 随机一个顶级域名
+chance:tld()
+-- 随机一个 twitter 号
+chance:twitter()
+-- 随机一个 url
+-- protocol url 协议
+-- domain 域名
+-- domain_prefix 域名前缀
+-- path url 子路径
+-- extensions 域名后缀
+chance:url()
+chance:url({ protocol = "https" })
+chance:url({ domain = "victorquinn.com" })
+chance:url({ domain_prefix = "www" })
+chance:url({ path = "images" })
+chance:url({ extensions = { "html" } })
+-- 随机一个端口号
+chance:port()
+-- 随机一个方言
+-- region 是否显示地区缩写
+chance:locale()
+chance:locale({ region = true })
+-- 随机一个图片 url
+-- width/height 图片宽高
+-- greyscale 是否显示图片灰度
+-- blurred 是否显示地址混淆
+chance:lorem_picsum()
+chance:lorem_picsum({ width = width, height = height })
+chance:lorem_picsum({ greyscale = true })
+chance:lorem_picsum({ blurred = true })
+```
+
 ## Notes
 
 之前喜欢使用 chance.js 这个库，但是现在在 lua 上也类似的需求，所以想搞过来用，搜了下发现有一些类似的库，但都不满足我的使用习惯，所以干脆自己 port 一个

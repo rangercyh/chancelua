@@ -40,7 +40,28 @@ function mt:d100()
     return self:natural({ min = 1, max = 100 })
 end
 
-function mt:rpg()
+function mt:rpg(thrown, options)
+    options = helper.init_options(options)
+    assert(thrown, "Chance: A type of die roll must be included")
+    local bits = helper.split(string.lower(thrown), "d")
+    local rolls = {}
+    if #bits ~= 2 or not(tonumber(bits[1], 10)) or not(tonumber(bits[2], 10)) then
+        assert(false, "Chance: Invalid format provided. Please provide #d#\
+            where the first # is the number of dice to roll, the second # is\
+             the max of each die")
+    end
+    for i = bits[1], 1, -1 do
+        rolls[i] = self:natural({ min = 1, max = tonumber(bits[2], 10) })
+    end
+    if options.sum then
+        local sum = 0
+        for i = 1, #rolls do
+            sum = sum + rolls[i]
+        end
+        return sum
+    else
+        return rolls
+    end
 end
 
 -- Guid
@@ -48,7 +69,11 @@ function mt:guid()
 end
 
 -- Hash
-function mt:hash()
+function mt:hash(options)
+    options = helper.init_options(options, { length = 40, casing = "lower" })
+    local pool = options.casing == "upper" and string.upper(helper.HEX_POOL) or
+            helper.HEX_POOL
+    return self:string({ pool = pool, length = options.length })
 end
 
 function mt:luhn_check(num)

@@ -17,49 +17,49 @@ local AGE_MAX = 100
 
 local cur_year = os.date("*t").year
 tip = 'age() returns a random age within expected bounds'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local age = chance:age()
     assert(type(age) == "number", tip)
     assert(age >= ADULT_AGE_MIN and age <= ADULT_AGE_MAX, tip)
 end)
 
 tip = 'age() returns a random age within expected bounds for all'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local age = chance:age({ type = "all" })
     assert(type(age) == "number", tip)
     assert(age >= AGE_MIN and age <= AGE_MAX, tip)
 end)
 
 tip = 'age() returns a proper age for a child'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local age = chance:age({ type = "child" })
     assert(type(age) == "number", tip)
     assert(age >= CHILD_AGE_MIN and age <= CHILD_AGE_MAX, tip)
 end)
 
 tip = 'age() returns a proper age for a teen'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local age = chance:age({ type = "teen" })
     assert(type(age) == "number", tip)
     assert(age >= TEEN_AGE_MIN and age <= TEEN_AGE_MAX, tip)
 end)
 
 tip = 'age() returns a proper age for an adult'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local age = chance:age({ type = "adult" })
     assert(type(age) == "number", tip)
     assert(age >= ADULT_AGE_MIN and age <= ADULT_AGE_MAX, tip)
 end)
 
 tip = 'age() returns a proper age for a senior'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local age = chance:age({ type = "senior" })
     assert(type(age) == "number", tip)
     assert(age >= SENIOR_AGE_MIN and age <= SENIOR_AGE_MAX, tip)
 end)
 
 tip = 'birthday() works as expected'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local birthday = chance:birthday()
     assert(type(birthday) == "table", tip)
     local year = birthday.year
@@ -68,19 +68,19 @@ Helper.thousand_times_f(function()
 end)
 
 tip = 'birthday() can have a str returned'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local birthday = chance:birthday({ str = true })
     assert(type(birthday) == "string", tip)
     assert(string.match(birthday, "%d%d%d%d%-%d%d%-%d%d %d%d:%d%d:%d%d") == birthday, tip)
 end)
 
 tip = 'birthday() can have a year specified'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     assert(chance:birthday({ year = 1983 }).year == 1983, tip)
 end)
 
 tip = 'birthday() can have an age range specified for an adult'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local birthday = chance:birthday({ type = "adult" })
     local cur_year = os.date("*t").year
     local min = os.time({
@@ -96,7 +96,7 @@ Helper.thousand_times_f(function()
 end)
 
 tip = 'birthday() can have an age range specified for a teen'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local birthday = chance:birthday({ type = "teen" })
     local cur_year = os.date("*t").year
     local min = os.time({
@@ -112,7 +112,7 @@ Helper.thousand_times_f(function()
 end)
 
 tip = 'birthday() can have an age range specified for a child'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local birthday = chance:birthday({ type = "child" })
     local cur_year = os.date("*t").year
     local min = os.time({
@@ -128,7 +128,7 @@ Helper.thousand_times_f(function()
 end)
 
 tip = 'birthday() can have an age range specified for a senior'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local birthday = chance:birthday({ type = "senior" })
     local cur_year = os.date("*t").year
     local min = os.time({
@@ -144,14 +144,14 @@ Helper.thousand_times_f(function()
 end)
 
 tip = 'company() returns a random company'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local company = chance:company()
     assert(type(company) == "string", tip)
     assert(string.len(company) > 4, tip)
 end)
 
 tip = 'cpf() returns a random valid taxpayer number for Brazil citizens (CPF)'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local cpf = chance:cpf()
     assert(type(cpf) == "string", tip)
     assert(string.match(cpf, "^%d%d%d.%d%d%d.%d%d%d%-%d%d$"), tip)
@@ -159,7 +159,7 @@ Helper.thousand_times_f(function()
 end)
 
 tip = 'first() returns a random first name'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local first = chance:first()
     assert(type(first) == "string", tip)
     local len = string.len(first)
@@ -168,19 +168,19 @@ Helper.thousand_times_f(function()
 end)
 
 tip = 'gender() returns a random gender'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local gender = chance:gender()
     assert(gender == "Male" or gender == "Female", tip)
 end)
 
 tip = 'gender() can take extra genders'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local gender = chance:gender({ extra_genders = { "Unknown", "Transgender" } })
     assert(gender == "Male" or gender == "Female" or gender == "Unknown" or gender == "Transgender", tip)
 end)
 
 tip = 'HIDN() returns a random HIDN'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local hidn = chance:HIDN()
     assert(type(hidn) == "string", tip)
     assert(string.match(hidn, "^%d%d%d%d%d%d%u%u$") == hidn, tip)
@@ -203,7 +203,7 @@ local last_digit = string.sub(tostring(10 - tonumber(string.sub(tostring(tonumbe
 assert(last_digit == string.sub(id, 9), tip)
 
 tip = 'last() returns a random last name'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local last = chance:last()
     assert(type(last) == "string", tip)
     local len = string.len(last)
@@ -212,7 +212,7 @@ Helper.thousand_times_f(function()
 end)
 
 tip = 'name() returns a random name'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local name = chance:name()
     assert(type(name) == "string", tip)
     local len = string.len(name)
@@ -222,7 +222,7 @@ Helper.thousand_times_f(function()
 end)
 
 tip = 'name() can have the middle name specified'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local name = chance:name({ middle = true })
     assert(type(name) == "string", tip)
     assert(#Helper.split(name, " ") == 3, tip)
@@ -230,7 +230,7 @@ Helper.thousand_times_f(function()
 end)
 
 tip = 'name() can have the middle initial specified'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local name = chance:name({ middle_initial = true })
     assert(type(name) == "string", tip)
     assert(#Helper.split(name, " ") == 3, tip)
@@ -238,7 +238,7 @@ Helper.thousand_times_f(function()
 end)
 
 tip = 'name() can have the prefix specified'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local name = chance:name({ prefix = true })
     assert(type(name) == "string", tip)
     assert(#Helper.split(name, " ") == 3, tip)
@@ -246,7 +246,7 @@ Helper.thousand_times_f(function()
 end)
 
 tip = 'name() can have the suffix specified'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local name = chance:name({ suffix = true })
     assert(type(name) == "string", tip)
     assert(#Helper.split(name, " ") == 3, tip)
@@ -254,7 +254,7 @@ Helper.thousand_times_f(function()
 end)
 
 tip = 'prefix() returns a random prefix'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local prefix = chance:prefix({ gender = "female" })
     assert(prefix ~= "Mr.", tip)
     prefix = chance:prefix({ gender = "male" })
@@ -263,28 +263,28 @@ Helper.thousand_times_f(function()
 end)
 
 tip = 'prefix() can return a full prefix'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local prefix = chance:prefix({ full = true })
     assert(type(prefix) == "string", tip)
     assert(string.len(prefix) > 3, tip)
 end)
 
 tip = 'suffix() returns a random suffix'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local suffix = chance:suffix()
     assert(type(suffix) == "string", tip)
     assert(string.len(suffix) < 7, tip)
 end)
 
 tip = 'suffix() can return a full suffix'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local suffix = chance:suffix({ full = true })
     assert(type(suffix) == "string", tip)
     assert(string.len(suffix) > 5, tip)
 end)
 
 tip = 'nationality() returns a nationality that looks right'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local nationality = chance:nationality()
     assert(type(nationality) == "string", tip)
     local len = string.len(nationality)
@@ -292,7 +292,7 @@ Helper.thousand_times_f(function()
 end)
 
 tip = 'profession() returns a random profession'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local profession = chance:profession()
     assert(type(profession) == "string", tip)
     local len = string.len(profession)
@@ -300,7 +300,7 @@ Helper.thousand_times_f(function()
 end)
 
 tip = 'profession() returns a ranked profession'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local profession = chance:profession({ rank = true })
     assert(type(profession) == "string", tip)
     local profession_split = Helper.split(profession, " ")
@@ -310,7 +310,7 @@ Helper.thousand_times_f(function()
 end)
 
 tip = 'ssn() returns a random social security number'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local ssn = chance:ssn()
     assert(type(ssn) == "string", tip)
     assert(string.len(ssn) == 11, tip)
@@ -318,7 +318,7 @@ Helper.thousand_times_f(function()
 end)
 
 tip = 'ssn() can return just the last 4'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local ssn = chance:ssn({ ssn_four = true })
     assert(type(ssn) == "string", tip)
     assert(string.len(ssn) == 4, tip)
@@ -326,7 +326,7 @@ Helper.thousand_times_f(function()
 end)
 
 tip = 'aadhar() returns a random aadhar number with whitespace as separator'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local aadhar = chance:aadhar()
     assert(type(aadhar) == "string", tip)
     assert(string.len(aadhar) == 14, tip)
@@ -334,7 +334,7 @@ Helper.thousand_times_f(function()
 end)
 
 tip = 'aadhar() returns a random aadhar number with no separator'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local aadhar = chance:aadhar({ separated_by_whitespace = false })
     assert(type(aadhar) == "string", tip)
     assert(string.len(aadhar) == 12, tip)
@@ -342,7 +342,7 @@ Helper.thousand_times_f(function()
 end)
 
 tip = 'aadhar() can return just the last 4'
-Helper.thousand_times_f(function()
+Helper.times_f(function()
     local aadhar = chance:aadhar({ only_last_four = true })
     assert(type(aadhar) == "string", tip)
     assert(string.len(aadhar) == 4, tip)

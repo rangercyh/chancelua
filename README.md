@@ -464,6 +464,80 @@ chance:wp7_anid()
 chance:bb_pin()
 ```
 
+### time
+```lua
+-- 随机 am/pm
+chance:ampm()
+-- 随机一个时间
+-- min/max 标识时间戳范围
+-- year/month/day/hour/minute/second 标识具体的时间
+-- str 标识返回 os.date("*t") 的 table 还是 os.date("%Y-%m-%d %H:%M:%S") 字符串
+chance:date()
+chance:date({ min = 2000, max = 3000 })
+chance:date({ year = 2022 })
+chance:date({ month = 12 })
+chance:date({ day = 21, month = 11 })
+chance:date({ min = os.time() })
+chance:date({ str = true, min = os.time() + 1000000 })
+-- 随机一个小时，默认 [1-12]
+-- min/max 返回随机范围
+-- twenty_four 二十四小时制 [0-23]
+chance:hour()
+chance:hour({ twenty_four = true })
+chance:hour({ min = 5, max = 7 })
+-- 随机一个分钟数，默认 [0-59]
+-- min/max 范围
+chance:minute()
+chance:minute({ min = 10, max = 35 })
+-- 随机一个秒数
+-- 参数同 chance:minite()
+chance:second()
+-- 随机一个年份
+-- min/max 年份范围
+chance:year()
+chance:year({ min = 2000, max = 2500 })
+-- 随机一个月份
+-- min/max 范围
+-- raw 是否返回月份详细信息
+chance:month()
+chance:month({ raw = true })
+chance:month({ min = 5, max = 11, raw = true })
+-- 随机一个星期
+-- weekday_only 是否包含双休日
+chance:weekday()
+chance:weekday({ weekday_only = true })
+-- 随机一个时间戳
+chance:timestamp()
+```
+
+### text
+```lua
+-- 随机一个段落
+-- sentences 随机句子数量
+-- linebreak 每句话是否换行
+chance:paragraph()
+chance:paragraph({ sentences = 5 })
+chance:paragraph({ linebreak = true })
+-- 随机一个句子
+-- words 每个句子多少个单词
+-- punctuation 是否带句号，默认为 .,允许 ./?/!/:/;
+chance:sentence()
+chance:sentence({ words = 5 })
+chance:sentence({ punctuation = ";" })
+-- 随机一个音节
+-- length 音节长度
+-- capitalize 首字母是否大写
+chance:syllable()
+chance:syllable({ length = 5 })
+chance:syllable({ capitalize = true })
+-- 随机一个单词
+-- syllables 单词的音节数量
+-- length 单词的长度
+chance:word()
+chance:word({ length = 5 })
+chance:word({ syllables = 2 })
+```
+
 ## Notes
 
 之前喜欢使用 chance.js 这个库，但是现在在 lua 上也类似的需求，所以想搞过来用，搜了下发现有一些类似的库，但都不满足我的使用习惯，所以干脆自己 port 一个

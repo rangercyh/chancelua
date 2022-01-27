@@ -98,8 +98,9 @@ function M.parse_templates(template)
     return tokens
 end
 
-function M.thousand_times_f(f)
-    for _ = 1, 1000 do
+M.times = 100
+function M.times_f(f)
+    for _ = 1, M.times do
         f()
     end
 end

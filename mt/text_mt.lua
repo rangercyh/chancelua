@@ -2,11 +2,36 @@ local helper = require "utils.helper"
 
 local mt = {}
 
-function mt:paragraph()
+function mt:paragraph(options)
+    options = helper.init_options(options)
+    local sentences = options.sentences or self:natural({ min = 3, max = 7 })
+    local sentence_arr = self:n(self.sentence, self, sentences)
+    local sep = options.linebreak and '\n' or ' '
+    return table.concat(sentence_arr, sep)
 end
+
 -- Could get smarter about this than generating random words and
 -- chaining them together. Such as: http://vq.io/1a5ceOh
-function mt:sentence()
+function mt:sentence(options)
+    options = helper.init_options(options)
+    local words = options.words or self:natural({ min = 12, max = 18 })
+    local punctuation = options.punctuation
+    local word_arr = self:n(self.word, self, words)
+    local text = table.concat(word_arr, " ")
+    -- Capitalize first letter of sentence
+    text = self:capitalize(text)
+    -- Make sure punctuation has a usable value
+    if punctuation ~= false then
+        punctuation = punctuation or "."
+        if string.match(punctuation, "^[%.%?!:;]$") ~= punctuation then
+            punctuation = "."
+        end
+    end
+    -- Add punctuation mark
+    if punctuation then
+        text = text .. punctuation
+    end
+    return text
 end
 
 function mt:syllable(options)

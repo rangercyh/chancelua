@@ -3,14 +3,15 @@ local helper = require "utils.helper"
 local mt = {}
 
 function mt:ampm()
+    return self:bool() and "am" or "pm"
 end
 
 function mt:date(options)
     local date
     if options and (options.min or options.max) then
         options = helper.init_options(options, { str = false })
-        local min = options.min and options.min or 14400       -- 01/01/70 12:00:00
-        local max = options.max and options.max or 8640000000  -- 10/17/43 08:00:00
+        local min = options.min and options.min or 1       -- 1970-01-01 08:00:01
+        local max = options.max and options.max or 12345678901  -- 2361-03-22 03:15:01
         date = os.date("*t", self:integer({ min = min, max = max }))
     else
         local m = self:month({ raw = true })
@@ -37,9 +38,6 @@ function mt:date(options)
         }))
     end
     return options.str and os.date("%Y-%m-%d %H:%M:%S", os.time(date)) or date
-end
-
-function mt:hammertime()
 end
 
 function mt:hour(options)
@@ -81,9 +79,19 @@ function mt:month(options)
 end
 
 function mt:timestamp()
+    return self:natural({ min = 1, max = tonumber(os.time()) })
 end
-function mt:weekday()
+
+function mt:weekday(options)
+    options = helper.init_options(options, { weekday_only = false })
+    local weekdays = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday" }
+    if not(options.weekday_only) then
+        table.insert(weekdays, "Saturday")
+        table.insert(weekdays, "Sunday")
+    end
+    return self:pickone(weekdays)
 end
+
 function mt:year(options)
     -- Default to current year as min if none specified
     options = helper.init_options(options, { min = os.date("*t").year })

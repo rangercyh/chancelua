@@ -99,8 +99,9 @@ function M.parse_templates(template)
 end
 
 M.times = 100
-function M.times_f(f)
-    for _ = 1, M.times do
+function M.times_f(f, n)
+    n = n or M.times
+    for _ = 1, n do
         f()
     end
 end

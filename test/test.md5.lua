@@ -1,5 +1,5 @@
 local MD5 = require "utils.md5"
-
+local t1 = os.clock()
 local a = MD5.sum("asdf")
 assert(MD5.tohex(a) == "912ec803b2ce49e4a541068d495ab570")
 assert(MD5.sumhexa("asdf") == "912ec803b2ce49e4a541068d495ab570")
@@ -16,4 +16,4 @@ assert(MD5.sumhexa(string.char(97, 98, 99)) == "900150983cd24fb0d6963f7d28e17f72
 assert(MD5.sumhexa(string.char(0,1,2,3,97,98,99)) == "cd51793a3fddc3031543a35e9d4db296")
 assert(MD5.sumhexa("asdfasdfasdfasdf") == "08afd6f9ae0c6017d105b4ce580de885")
 
-print("-------->>>>>>>> md5 test ok <<<<<<<<--------")
+print("-------->>>>>>>> md5 test ok <<<<<<<<--------", os.clock() - t1)

@@ -1,6 +1,6 @@
 local Helper = require "utils.helper"
 local Chance = require "chance"
-
+local t1 = os.clock()
 local chance = Chance.new()
 
 local tip = 'sentence() returns a random sentence'
@@ -83,7 +83,7 @@ Helper.times_f(function()
     assert(type(paragraph) == "string", tip)
     local len = #Helper.split(paragraph, "%.")
     assert(len > 2 and len < 9, tip)
-end)
+end, 10)
 
 tip = 'paragraph() will obey bounds'
 Helper.times_f(function()
@@ -91,7 +91,7 @@ Helper.times_f(function()
     assert(type(paragraph) == "string", tip)
     local len = #Helper.split(paragraph, "%.")
     assert(len == 5, tip)
-end)
+end, 10)
 
 tip = 'paragraph() will obey line breaks'
 Helper.times_f(function()
@@ -100,6 +100,6 @@ Helper.times_f(function()
     assert(type(paragraph) == "string", tip)
     local len = #Helper.split(paragraph, "\n")
     assert(len == rand, tip)
-end)
+end, 10)
 
-print("-------->>>>>>>> text test ok <<<<<<<<--------")
+print("-------->>>>>>>> text test ok <<<<<<<<--------", os.clock() - t1)

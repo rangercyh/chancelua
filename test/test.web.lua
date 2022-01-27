@@ -1,6 +1,6 @@
 local Helper = require "utils.helper"
 local Chance = require "chance"
-
+local t1 = os.clock()
 local chance = Chance.new()
 tip = 'color() returns what looks like a hex color'
 Helper.times_f(function()
@@ -370,4 +370,4 @@ Helper.times_f(function()
     assert(#Helper.split(lorem_picsum_url, "/%?blur") > 1, tip)
 end)
 
-print("-------->>>>>>>> web test ok <<<<<<<<--------")
+print("-------->>>>>>>> web test ok <<<<<<<<--------", os.clock() - t1)

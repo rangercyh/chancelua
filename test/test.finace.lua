@@ -1,6 +1,6 @@
 local Helper = require "utils.helper"
 local Chance = require "chance"
-
+local t1 = os.clock()
 local chance = Chance.new()
 
 local tip = 'cc() passes the luhn algorithm'
@@ -179,6 +179,14 @@ Helper.times_f(function()
     assert(type(timezone.utc) == "table", tip)
 end)
 
-chance:vat()
+tip = 'vat() returns a valid italian vat number'
+Helper.times_f(function()
+    local vat = chance:vat({ country = "it" })
+    assert(type(vat) == "string", tip)
+    assert(string.len(vat) == 11, tip)
+    local first = string.sub(vat, 1, 1)
+    assert(first == "0" or first == "1", tip)
+    assert(chance:luhn_check(vat))
+end)
 
-print("-------->>>>>>>> finace test ok <<<<<<<<--------")
+print("-------->>>>>>>> finace test ok <<<<<<<<--------", os.clock() - t1)

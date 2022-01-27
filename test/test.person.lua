@@ -1,6 +1,6 @@
 local Helper = require "utils.helper"
 local Chance = require "chance"
-
+local t1 = os.clock()
 local chance = Chance.new()
 
 -- age constants
@@ -395,5 +395,5 @@ end
 format = format .. "%d%d$"
 assert(string.match(string.sub(mrz, 45), format) == string.sub(mrz, 45), tip)
 
-print("-------->>>>>>>> person test ok <<<<<<<<--------")
+print("-------->>>>>>>> person test ok <<<<<<<<--------", os.clock() - t1)
 

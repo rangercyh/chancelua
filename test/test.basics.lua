@@ -1,6 +1,6 @@
 local Helper = require "utils.helper"
 local Chance = require "chance"
-
+local t1 = os.clock()
 local chance = Chance.new()
 local tip = "returns a random boolean"
 local bool = chance:bool()
@@ -461,4 +461,4 @@ assert(not(pcall(fn)), tip)
 tip = 'template() cannot be empty'
 assert(not(pcall(fn, "")), tip)
 
-print("-------->>>>>>>> basics test ok <<<<<<<<--------")
+print("-------->>>>>>>> basics test ok <<<<<<<<--------", os.clock() - t1)

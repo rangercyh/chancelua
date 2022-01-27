@@ -1,6 +1,6 @@
 local Helper = require "utils.helper"
 local Chance = require "chance"
-
+local t1 = os.clock()
 local chance = Chance.new()
 local tip = 'ampm() returns am or pm'
 Helper.times_f(function()
@@ -217,4 +217,4 @@ Helper.times_f(function()
     assert(tonumber(year) <= 2501 and tonumber(year) >= 0, tip)
 end)
 
-print("-------->>>>>>>> time test ok <<<<<<<<--------")
+print("-------->>>>>>>> time test ok <<<<<<<<--------", os.clock() - t1)

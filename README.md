@@ -538,6 +538,20 @@ chance:word({ length = 5 })
 chance:word({ syllables = 2 })
 ```
 
+### regional
+```lua
+-- 随机一个 it vat
+chance:it_vat()
+-- 随机一个 cf 号 
+chance:cf()
+-- 随机一个 pl_pesel
+chance:pl_pesel()
+-- 随机一个 pl_nip
+chance:pl_nip()
+-- 随机一个 pl_regon
+chance:pl_regon()
+```
+
 ## Notes
 
 之前喜欢使用 chance.js 这个库，但是现在在 lua 上也类似的需求，所以想搞过来用，搜了下发现有一些类似的库，但都不满足我的使用习惯，所以干脆自己 port 一个

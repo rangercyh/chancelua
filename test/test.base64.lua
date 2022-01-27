@@ -1,5 +1,7 @@
 local Base64 = require "utils.base64"
 
+local t1 = os.clock()
+
 assert(Base64("") == "")
 assert(Base64("f") == "Zg==")
 assert(Base64("fo") == "Zm8=")
@@ -19,4 +21,4 @@ assert(Base64(string.char(97, 98, 99)) == "YWJj")
 assert(Base64(string.char(0,1,2,3,97,98,99)) == "AAECA2FiYw==")
 assert(Base64("asdfasdfasdfasdf") == "YXNkZmFzZGZhc2RmYXNkZg==")
 
-print("-------->>>>>>>> base64 test ok <<<<<<<<--------")
+print("-------->>>>>>>> base64 test ok <<<<<<<<--------", os.clock() - t1)

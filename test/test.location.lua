@@ -1,6 +1,6 @@
 local Helper = require "utils.helper"
 local Chance = require "chance"
-
+local t1 = os.clock()
 local chance = Chance.new()
 local tip = 'address() returns a string'
 assert(type(chance:address()) == "string", tip)
@@ -45,21 +45,21 @@ Helper.times_f(function()
     local areacode = chance:areacode()
     assert(type(areacode) == "string", tip)
     assert(string.match(areacode, "^%([2-9][0-8][0-9]%)$") == areacode, tip)
-end)
+end, 10)
 
 tip = 'areacode() can take parens'
 Helper.times_f(function()
     local areacode = chance:areacode({ parens = false })
     assert(type(areacode) == "string", tip)
     assert(string.match(areacode, "^[2-9][0-8][0-9]$") == areacode, tip)
-end)
+end, 10)
 
 tip = 'city() looks right'
 Helper.times_f(function()
     local city = chance:city()
     assert(type(city) == "string", tip)
     assert(string.match(city, "[%l%u]+") == city, tip)
-end)
+end, 10)
 
 tip = 'coordinates() looks right'
 Helper.times_f(function()
@@ -290,28 +290,28 @@ Helper.times_f(function()
     local phone = chance:phone({ formatted = false })
     assert(type(phone) == "string", tip)
     assert(string.match(phone, "^[2-9][0-8]%d[2-9]%d%d%d%d%d%d$") == phone, tip)
-end)
+end, 10)
 
 tip = 'phone() obeys formatted option and parens option'
 Helper.times_f(function()
     local phone = chance:phone({ formatted = false, parens = true })
     assert(type(phone) == "string", tip)
     assert(string.match(phone, "^[2-9][0-8]%d[2-9]%d%d%d%d%d%d$") == phone, tip)
-end)
+end, 10)
 
 tip = "phone() obeys exampleNumber option"
 Helper.times_f(function()
     local phone = chance:phone({ example_number = true })
     assert(type(phone) == "string", tip)
     assert(string.match(phone, "^%(555%)?[%-. ]?[2-9][0-9]+[%- ]?[0-9]+$") == phone, tip)
-end)
+end, 10)
 
 tip = "phone() obeys formatted option and exampleNumber option"
 Helper.times_f(function()
     local phone = chance:phone({ example_number = true, formatted = false })
     assert(type(phone) == "string", tip)
     assert(string.match(phone, "^555[2-9]%d%d%d%d%d%d$") == phone, tip)
-end)
+end, 10)
 
 tip = 'phone() with uk option works'
 assert(type(chance:phone({ country = "uk" })) == "string", tip)
@@ -356,25 +356,25 @@ tip = 'phone() with fr country looks right'
 Helper.times_f(function()
     local phone = chance:phone({ country = "fr" })
     assert(string.match(phone, "0[123459] .. .. .. ..") == phone, tip)
-end)
+end, 10)
 
 tip = 'phone() with fr country looks right unformatted'
 Helper.times_f(function()
     local phone = chance:phone({ country = "fr", formatted = false })
     assert(string.match(phone, "0.........") == phone, tip)
-end)
+end, 10)
 
 tip = 'phone() with fr country on mobile looks right'
 Helper.times_f(function()
     local phone = chance:phone({ country = "fr", mobile = true })
     assert(string.match(phone, "0[67] .. .. .. ..") == phone, tip)
-end)
+end, 10)
 
 tip = 'phone() with fr country on mobile, unformatted looks right'
 Helper.times_f(function()
     local phone = chance:phone({ country = "fr", mobile = true, formatted = false })
     assert(string.match(phone, "0[67]........") == phone, tip)
-end)
+end, 10)
 
 tip = 'phone() with br country option works'
 assert(type(chance:phone({ country = "br" })), tip)
@@ -398,7 +398,7 @@ tip = 'phone() with br country, formatted and mobile option apply the correct ma
 Helper.times_f(function()
     local phone = chance:phone({ country = "br", mobile = true, formatted = true })
     assert(string.match(phone, "%(%d%d%) 9%d%d%d%d%-%d%d%d%d") == phone, tip)
-end)
+end, 10)
 
 tip = 'postal() returns a valid basic postal code'
 Helper.times_f(function()
@@ -475,14 +475,14 @@ Helper.times_f(function()
     local zip = chance:zip()
     assert(string.len(zip) == 5, tip)
     assert(string.match(zip, "^%d%d%d%d%d$") == zip or string.match(zip, "^%d%d%d%d%d%-%d%d%d%d$") == zip, tip)
-end)
+end, 10)
 
 tip = 'zip() returns a valid zip+4 code'
 Helper.times_f(function()
     local zip = chance:zip({ plusfour = true })
     assert(string.len(zip) == 10, tip)
     assert(string.match(zip, "^%d%d%d%d%d$") == zip or string.match(zip, "^%d%d%d%d%d%-%d%d%d%d$") == zip, tip)
-end)
+end, 10)
 
-print("-------->>>>>>>> location test ok <<<<<<<<--------")
+print("-------->>>>>>>> location test ok <<<<<<<<--------", os.clock() - t1)
 

@@ -1,6 +1,6 @@
 local Helper = require "utils.helper"
 local Chance = require "chance"
-
+local t1 = os.clock()
 local chance = Chance.new()
 
 tip = 'android_id() returns a proper android id'
@@ -11,7 +11,7 @@ end
 Helper.times_f(function()
     local id = chance:android_id()
     assert(string.match(id, format) == id, tip)
-end)
+end, 10)
 
 tip = 'apple_token() returns a proper apple push token'
 format = ""
@@ -21,7 +21,7 @@ end
 Helper.times_f(function()
     local apple_token = chance:apple_token()
     assert(string.match(apple_token, format) == apple_token, tip)
-end)
+end, 10)
 
 tip = 'wp8_anid2() returns a proper windows phone 8 anid2'
 format = "^"
@@ -32,7 +32,7 @@ format = format .. "=$"
 Helper.times_f(function()
     local wp8_anid2 = chance:wp8_anid2()
     assert(string.match(wp8_anid2, format) == wp8_anid2, tip)
-end)
+end, 10)
 
 tip = 'wp7_anid() returns a proper windows phone 7 anid'
 format = "^A="
@@ -43,7 +43,7 @@ format = format .. "&E=[%da-f][%da-f][%da-f]&W=%d$"
 Helper.times_f(function()
     local wp7_anid = chance:wp7_anid()
     assert(string.match(wp7_anid, format) == wp7_anid, tip)
-end)
+end, 10)
 
 tip = 'bb_pin() returns a proper blackberry pin'
 format = ""
@@ -53,6 +53,6 @@ end
 Helper.times_f(function()
     local bb_pin = chance:bb_pin()
     assert(string.match(bb_pin, format) == bb_pin, tip)
-end)
+end, 10)
 
-print("-------->>>>>>>> mobile test ok <<<<<<<<--------")
+print("-------->>>>>>>> mobile test ok <<<<<<<<--------", os.clock() - t1)

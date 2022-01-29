@@ -281,4 +281,90 @@ Helper.times_f(function()
     assert(string.match(tv, "^[KW]%u%u%u") == tv, tip)
 end)
 
+local file_extensions = {
+    ["raster"] = { "bmp", "gif", "gpl", "ico", "jpeg", "psd", "png", "psp", "raw",
+                "tiff" },
+    ["vector"] = { "3dv", "amf", "awg", "ai", "cgm", "cdr", "cmx", "dxf", "e2d",
+                "egt", "eps", "fs", "odg", "svg", "xar" },
+    ["3d"] = { "3dmf", "3dm", "3mf", "3ds", "an8", "aoi", "blend", "cal3d", "cob",
+            "ctm", "iob", "jas", "max", "mb", "mdx", "obj", "x", "x3d" },
+    ["document"] = { "doc", "docx", "dot", "html", "xml", "odt", "odm", "ott", "csv",
+                  "rtf", "tex", "xhtml", "xps" },
+}
+
+tip = 'file() returns random file length with random extension'
+Helper.times_f(function()
+    local file = chance:file()
+    assert(type(file) == "string", tip)
+    assert(#Helper.split(file, "%.") == 2, tip)
+end)
+
+tip = 'file() returns error if wrong fileType provided'
+local fn = function()
+    chance:file({ file_type = "not_specified" })
+end
+assert(not(pcall(fn)), tip)
+
+tip = 'file() does not return error if legit fileType provided'
+local fn = function()
+    chance:file({ file_type = "raster" })
+end
+
+tip = 'file() returns filename with specific extension type'
+Helper.times_f(function()
+    local file = chance:file({ file_type = "raster" })
+    assert(type(file) == "string", tip)
+    local t = Helper.split(file, "%.")
+    local find = false
+    for _, v in pairs(file_extensions["raster"]) do
+        if v == t[2] then
+            find = true
+            break
+        end
+    end
+    assert(find, tip)
+end)
+
+tip = 'file() returns filename with specific extension'
+Helper.times_f(function()
+    local file = chance:file({ extension = "doc" })
+    local t = Helper.split(file, "%.")
+    assert(t[2] == "doc", tip)
+end)
+
+tip = 'file() can take a length and obey it'
+Helper.times_f(function()
+    local length = chance:d10()
+    local file = chance:file({ length = length })
+    local t = Helper.split(file, "%.")
+    assert(string.len(t[1]) == length, tip)
+end)
+
+tip = 'file() can take a pool of extensions and obey them'
+Helper.times_f(function()
+    local extensions = { 'bmp', '3dv', '3dmf', 'doc' }
+    local file = chance:file({ extensions = extensions })
+    local t = Helper.split(file, "%.")
+    local find = false
+    for _, v in pairs(extensions) do
+        if v == t[2] then
+            find = true
+            break
+        end
+    end
+    assert(find, tip)
+end)
+
+tip = 'file() throws if bad extensions option provided'
+local fn = function()
+    chance:file({ extensions = 10 })
+end
+assert(not(pcall(fn)), tip)
+
+tip = 'file() does not throw if good extensions option provided as array'
+local fn = function()
+    chance:file({ extensions = file_extensions.document })
+end
+assert(pcall(fn), tip)
+
 print("-------->>>>>>>> misc test ok <<<<<<<<--------", os.clock() - t1)

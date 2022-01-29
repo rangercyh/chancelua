@@ -644,6 +644,16 @@ chance:tv()
 chance:cnpj()
 -- 随机一个表情
 chance:emotion()
+-- 随机一个文件名
+-- length 文件名长度
+-- extension 指定文件后缀
+-- file_type 指定文件后缀类型 raster/vector/3d/document
+-- extensions 指定文件后缀数组
+chance:file()
+chance:file({ length = 5 })
+chance:file({ extension = "aaa" })
+chance:file({ file_type = "document" })
+chance:file({ extensions = { "aa", "bb" } })
 ```
 
 ### helpers

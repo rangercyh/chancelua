@@ -172,7 +172,47 @@ end
  * @return [string]
  *
 ]]
-function mt:file()
+function mt:file(options)
+    local file_options = options or {}
+    local fe = self:get("fileExtension")
+    -- { 'raster', 'vector', '3d', 'document' }
+    local type_range = {}
+    for k in pairs(fe) do
+        type_range[#type_range + 1] = k
+    end
+    -- Generate random file name
+    local file_name = self:word({ length = file_options.length })
+    -- Generate file by specific extension provided by the user
+    local file_ex
+    if file_options.extension then
+        file_ex = file_options.extension
+        return file_name .. "." .. file_ex
+    end
+    -- Generate file by specific extension collection
+    if file_options.extensions then
+        assert(type(file_options.extensions) == "table",
+            "Chance: Extensions must be an Array or Object")
+        file_ex = self:pickone(file_options.extensions)
+        return file_name .. "." .. file_ex
+    end
+    -- Generate file extension based on specific file type
+    if file_options.file_type then
+        local file_type = file_options.file_type
+        local check_type = false
+        for _, v in pairs(type_range) do
+            if v == file_type then
+                check_type = true
+                break
+            end
+        end
+        assert(check_type, "Chance: Expect file type value to be 'raster', \
+            'vector', '3d' or 'document'")
+        file_ex = self:pickone(fe[file_type])
+        return file_name .. "." .. file_ex
+    end
+    -- Generate random file name if no extension options are passed
+    file_ex = self:pickone(fe[self:pickone(type_range)])
+    return file_name .. "." .. file_ex
 end
 
 -- Get the data based on key

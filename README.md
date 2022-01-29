@@ -138,10 +138,6 @@ chance:cc_type({ name = "Visa" })
 chance:currency()
 -- 随机一个时区信息，见 data.lua timezones
 chance:timezone()
--- 随机一个货币对
--- 默认返回一个table，包含两种货币信息，传 true 返回货币对字符串 EUR/USD
-chance:currency_pair()
-chance:currency_pair(true)
 -- 随机数量美元字符串，$100.00 -$123.44，保留两位小数
 -- min/max 美元范围
 chance:dollar()
@@ -408,7 +404,7 @@ chance:ip()
 chance:ipv6()
 -- 随机一个 klout
 chance:klout()
--- 随机一个 mac 地址
+-- 随机一个 MACs
 -- delimiter 地址拼接符
 chance:mac()
 chance:mac({ delimiter = "." })
@@ -550,6 +546,136 @@ chance:pl_pesel()
 chance:pl_nip()
 -- 随机一个 pl_regon
 chance:pl_regon()
+```
+
+### music
+```lua
+-- 随机一个音符
+-- notes flatKey/sharpKey/flats/sharps/naturals/all
+chance:note()
+chance:note({ notes = "flatKey" })
+-- 随机一个 midi 音符
+-- min/max 范围
+chance:midi_note()
+chance:midi_note({ min = 10, max = 40 })
+-- 随机一个和弦结构
+-- jazz 是否是 jazz
+chance:chord_quality()
+chance:chord_quality({ jazz = true })
+-- 随机一个和弦
+-- 配置为 chance:note() 和 chance:chord_quality() 共有
+chance:chord()
+chance:chord({ min = 10, max = 40, jazz = true })
+-- 随机一个速度
+-- min/max 范围
+chance:tempo()
+chance:tempo({ min = 50, max = 300 })
+```
+
+### misc
+```lua
+-- 随机骰子正反
+chance:coin()
+-- 随机骰子1-4
+chance:d4()
+-- 随机骰子1-6
+chance:d6()
+-- 随机骰子1-8
+chance:d8()
+-- 随机骰子1-10
+chance:d10()
+-- 随机骰子1-12
+chance:d12()
+-- 随机骰子1-20
+chance:d20()
+-- 随机骰子1-30
+chance:d30()
+-- 随机骰子1-100
+chance:d100()
+-- 随机骰子，模式 #d#，# 是数字
+-- 前一个 # 代表 roll 次数，后一个 # 代表骰子面数
+-- sum 返回所有结果的和，否则返回每次结果的 table
+chance:rpg("5d20")
+chance:rpg("4d20", { sum = true })
+-- 随机一个 guid
+-- version guid 版本
+chance:guid()
+chance:guid({ version = 4 })
+-- 随机一个 hash 值
+-- length hash值长度
+-- casing 标识大小写
+chance:hash()
+chance:hash({ length = 40, casing = "upper" })
+chance:hash({ casing = "lower" })
+-- 卢恩检查
+chance:luhn_check(49927398716)
+-- 随机生成一个指定长度的能通过卢恩检查的数字
+chance:luhn_calculate(10)
+-- 获取 data.lua 里的数据
+chance:get("cc_types")
+-- 随意个 mac 地址
+-- separator 分隔符
+-- network_version 是否是网络地址版本
+chance:mac_address()
+chance:mac_address({ separator = "-" })
+chance:mac_address({ separator = ".", network_version = true })
+-- 随机生成一个正态分布的随机概率
+-- mean 期望
+-- dev 方差
+-- pool 随机池子，返回其中正态分布概率的元素
+chance:normal()
+chance:normal({ mean = 0, dev = 1 })
+chance:normal({ mean = 100, dev = 15 })
+chance:normal({ pool = { 1, 2, 3 } })
+-- 随机一个正态分布池子里的元素
+-- 参数同 chance:normal() 必须传 pool/mean/dev
+chance:normal_pool({ pool = { 1, 2, 3 }, mean = 50, dev = 10 })
+-- 随机一个电台
+-- side 东西海岸 east/west/e/w 大小写无所谓，其他字符认为东西均可
+chance:radio()
+chance:radio({ side = "east" })
+chance:radio({ side = "e" })
+chance:radio({ side = "?" })
+-- 设置修改 data.lua 的值
+chance:set("asdf", "asdf")
+-- 随机一个电台，同 chance:radio()
+chance:tv()
+-- 随机一个巴西公司的 ID
+chance:cnpj()
+-- 随机一个表情
+chance:emotion()
+```
+
+### helpers
+```lua
+-- 把一个字符串首字母大写
+-- word 字符串
+chance:capitalize(word)
+-- 调用一个函数 n 次，并将结果 table 返回
+-- fn 函数
+-- obj 通常是 fn 的第一个参数，用于 self:fn() 调用
+-- n 调用次数
+-- ...  函数参数
+chance:n(fn, obj, n, ...)
+-- pad 一个数字到指定宽度
+-- number 数字
+-- width 宽度
+-- pad pad 的填充字符
+chance:pad(number, width, pad)
+-- 从一个 arr 中随机挑选指定数量的元素
+-- arr 数组
+-- count 挑选的数量
+chance:pick(arr, count)
+-- 从一个 arr 中随机挑选出一个元素
+-- arr 数组
+chance:pickone(arr)
+-- 洗牌算法
+chance:shuffle(t)
+-- 按照权重随机返回一个元素
+-- arr 数组
+-- weights 权重数组
+-- trim 是否从 arr 和 weights 中移除选中的元素
+chance:weighted(arr, weights, trim)
 ```
 
 ## Notes

@@ -52,7 +52,7 @@ Helper.times_f(function()
     assert(type(currency) == "table", tip)
     assert(currency.code and string.len(currency.code) == 3 and currency.name, tip)
 end)
-
+--[[
 tip = 'currency_pair() returns a currency pair'
 Helper.times_f(function()
     local currency_pair = chance:currency_pair()
@@ -68,7 +68,7 @@ Helper.times_f(function()
     assert(string.len(currency_pair) == 7, tip)
     assert(string.match(currency_pair, "^[A-Z][A-Z][A-Z]+%/[A-Z][A-Z][A-Z]$") == currency_pair, tip)
 end)
-
+]]
 tip = 'dollar() returns a proper dollar amount'
 Helper.times_f(function()
     local dollar = chance:dollar()

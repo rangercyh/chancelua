@@ -45,22 +45,22 @@ function mt:timezone()
 end
 
 -- Return random correct currency exchange pair (e.g. EUR/USD) or array of currency code
-function mt:currency_pair(return_as_string)
-    local currencies = self:unique(self.currency, self, 2, {
-        comparator = function(arr, val)
-            local ret = false
-            for _, v in ipairs(arr) do
-                ret = ret or v.code == val.code
-            end
-            return ret
-        end,
-    })
-    if return_as_string then
-        return currencies[1].code .. '/' .. currencies[2].code
-    else
-        return currencies
-    end
-end
+-- function mt:currency_pair(return_as_string)
+--     local currencies = self:unique(self.currency, self, 2, {
+--         comparator = function(arr, val)
+--             local ret = false
+--             for _, v in ipairs(arr) do
+--                 ret = ret or v.code == val.code
+--             end
+--             return ret
+--         end,
+--     })
+--     if return_as_string then
+--         return currencies[1].code .. '/' .. currencies[2].code
+--     else
+--         return currencies
+--     end
+-- end
 
 function mt:dollar(options)
     -- By default, a somewhat more sane max for dollar than all available numbers

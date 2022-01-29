@@ -5,6 +5,7 @@ local mt = {}
 
 -- Coin - Flip, flip, flipadelphia
 function mt:coin()
+    return self:bool() and "heads" or "tails"
 end
 
 -- Dice - For all the board game geeks out there
@@ -110,10 +111,6 @@ function mt:luhn_calculate(num)
     return (sum * 9) % 10
 end
 
--- MD5 Hash
-function mt:md5()
-end
-
 --[[
  * #Description:
  * =====================================================
@@ -184,13 +181,81 @@ function mt:get(name)
 end
 
 -- Mac Address
-function mt:mac_address()
+function mt:mac_address(options)
+    -- typically mac addresses are separated by ":"
+    -- however they can also be separated by "-"
+    -- the network variant uses a dot every fourth byte
+    options = helper.init_options(options)
+    if not(options.separator) then
+        options.separator = options.network_version and "." or ":"
+    end
+    local mac_pool = "ABCDEF1234567890"
+    local mac
+    if options.network_version then
+        mac = table.concat(self:n(self.string, self, 3,
+                { pool = mac_pool, length = 4 }), options.separator)
+    else
+        mac = table.concat(self:n(self.string, self, 6,
+                { pool = mac_pool, length = 2 }), options.separator)
+    end
+    return mac
 end
-function mt:normal()
+
+function mt:normal(options)
+    options = helper.init_options(options, { mean = 0, dev = 1, pool = {} })
+    assert(type(options.pool) == "table", "Chance: The pool option must be a valid array.")
+    assert(type(options.mean) == "number", "Chance: Mean (mean) must be a number")
+    assert(type(options.dev) == "number", "Chance: Standard deviation (dev) must be a number")
+    -- If a pool has been passed, then we are returning an item from that pool,
+    -- using the normal distribution settings that were passed in
+    if #options.pool > 0 then
+        return self:normal_pool(options)
+    end
+    -- The Marsaglia Polar method
+    local mean = options.mean
+    local dev = options.dev
+    local u, v, s
+    repeat
+        -- U and V are from the uniform distribution on (-1, 1)
+        u = self:random() * 2 - 1
+        v = self:random() * 2 - 1
+        s = u * u + v * v
+    until s < 1
+    -- Compute the standard normal variate
+    local norm = u * math.sqrt(-2 * math.log(s) / s)
+    -- Shape and scale
+    return dev * norm + mean
 end
-function mt:normal_pool()
+
+function mt:normal_pool(options)
+    local performance_counter = 0
+    repeat
+        local idx = math.floor(0.5 + self:normal({ mean = options.mean, dev = options.dev }))
+        if idx < #options.pool and idx >= 0 then
+            return options.pool[idx + 1]
+        else
+            performance_counter = performance_counter + 1
+        end
+    until performance_counter >= 100
+    assert(false, "Chance: Your pool is too small for the given mean and \
+        standard deviation. Please adjust.")
 end
-function mt:radio()
+
+function mt:radio(options)
+    -- Initial Letter (Typically Designated by Side of Mississippi River)
+    options = helper.init_options(options, { side = "?" })
+    local fl
+    local sc = string.lower(options.side)
+    if sc == "east" or sc == "e" then
+        fl = "W"
+    elseif sc == "west" or sc == "w" then
+        fl = "K"
+    else
+        fl = self:character({ pool = "KW" })
+    end
+    return fl .. self:character({ alpha = true, casing = "upper" }) ..
+        self:character({ alpha = true, casing = "upper" }) ..
+        self:character({ alpha = true, casing = "upper" })
 end
 
 -- Set the data as key and data or the data map
@@ -204,13 +269,31 @@ function mt:set(name, values)
     end
 end
 
-function mt:tv()
+function mt:tv(options)
+    return self:radio(options)
 end
 
 -- ID number for Brazil companies
 function mt:cnpj()
+    local n = self:n(self.natural, self, 8, { max = 9 })
+    local d1 = 2 + n[8] * 6 + n[7] * 7 + n[6] * 8 + n[5] * 9 + n[4] * 2 +
+        n[3] * 3 + n[2] * 4 + n[1] * 5
+    d1 = 11 - (d1 % 11)
+    if d1 >= 10 then
+        d1 = 0
+    end
+    local d2 = d1 * 2 + 3 + n[8] * 7 + n[7] * 8 + n[6] * 9 + n[5] * 2 +
+        n[4] * 3 + n[3] * 4 + n[2] * 5 + n[1] * 6
+    d2 = 11 - (d2 % 11)
+    if d2 >= 10 then
+        d2 = 0
+    end
+    return "" .. n[1] .. n[2] .. "." .. n[3] .. n[4] .. n[5] .. "." .. n[6] ..
+        n[7] .. n[8] .. "/0001-" .. tostring(d1) .. tostring(d2)
 end
+
 function mt:emotion()
+    return self:pick(self:get("emotions"))
 end
 
 return mt

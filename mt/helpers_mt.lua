@@ -1,11 +1,11 @@
+local helper = require "utils.helper"
+
 local mt = {}
 
 function mt:capitalize(word)
     return string.upper(string.sub(word, 1, 1)) .. string.sub(word, 2)
 end
 
-function mt:mixin()
-end
 --[[
   Given a function that generates something random and a number of items to generate,
     return an array of items where none repeat.
@@ -18,32 +18,32 @@ end
 
   There can be more parameters after these. All additional parameters are provided to the given function
 ]]
-function mt:unique(fn, obj, num, options, ...)
-    assert(type(fn) == "function", "Chance: The first argument must be a function.")
-    local comparator = function(arr, val)
-        for _, v in ipairs(arr) do
-            if v == val then
-                return true
-            end
-        end
-        return false
-    end
-    if options then
-        comparator = options.comparator or comparator
-    end
-    local arr, count, max_duplicates = {}, 0, num * 50
-    while #arr < num do
-        local ret = fn(obj, ...)
-        if not(comparator(arr, ret)) then
-            arr[#arr + 1] = ret
-            -- reset count when unique found
-            count = 0
-        end
-        count = count + 1
-        assert(count <= max_duplicates, "Chance: num is likely too large for sample set")
-    end
-    return arr
-end
+-- function mt:unique(fn, obj, num, options, ...)
+--     assert(type(fn) == "function", "Chance: The first argument must be a function.")
+--     local comparator = function(arr, val)
+--         for _, v in ipairs(arr) do
+--             if v == val then
+--                 return false
+--             end
+--         end
+--         return true
+--     end
+--     if options then
+--         comparator = options.comparator or comparator
+--     end
+--     local arr, count, max_duplicates = {}, 0, num * 500
+--     while #arr < num do
+--         local ret = fn(obj, ...)
+--         if not(comparator(arr, ret)) then
+--             arr[#arr + 1] = ret
+--             -- reset count when unique found
+--             count = 0
+--         end
+--         count = count + 1
+--         assert(count <= max_duplicates, "Chance: num is likely too large for sample set")
+--     end
+--     return arr
+-- end
 --[[
   Gives an array of n random terms
 
@@ -90,16 +90,37 @@ function mt:pickone(arr)
 end
 
 -- Given an array, returns a random set with 'count' elements
-function mt:pickset()
-end
+-- function mt:pickset(arr, count)
+--     if count == 0 then
+--         return {}
+--     end
+--     count = count or 1
+--     assert(#arr > 0, "Chance: Cannot pickset() from an empty array")
+--     assert(count > 0, "Chance: Count must be a positive number")
+--     if count == 1 then
+--         return { self:pickone(arr) }
+--     else
+--         local len = #arr
+--         local new_arr = helper.clone(arr)
+--         return self:n(function(self, temp)
+--                     local index = self:natural({ max = #temp })
+--                     local v = temp[index]
+--                     local last = temp[#temp]
+--                     temp[index] = last
+--                     table.remove(temp)
+--                     return v
+--                 end, self, math.min(len, count), new_arr)
+--     end
+-- end
 
 function mt:shuffle(t)
-    local n = #t
+    local new_arr = helper.clone(t)
+    local n = #new_arr
     for i = 1, n do
         local j = self:natural({ max = n })
-        t[i], t[j] = t[j], t[i]
+        new_arr[i], new_arr[j] = new_arr[j], new_arr[i]
     end
-    return t
+    return new_arr
 end
 
 -- Returns a single item from an array with relative weighting of odds

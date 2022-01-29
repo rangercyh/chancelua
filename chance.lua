@@ -1,4 +1,5 @@
 local MersenneTwister = require "utils.mersenne_twister"
+local MD5 = require "utils.md5"
 
 local mt = {}
 mt.__index = mt
@@ -28,6 +29,10 @@ function mt:mersenne_twister(seed)
     return MersenneTwister.new(seed)
 end
 
+function mt:md5()
+    return MD5.new()
+end
+
 local hash_seed = function(str)
     local len = string.len(str)
     local hash = 0
@@ -48,7 +53,10 @@ function M.new(...)
     if num == 1 then
         local st = type(...)
         if st == "function" then    -- if user has provided a function, use that at the generator
-            chance.random = ...
+            local f = { ... }
+            chance.random = function()
+                return table.unpack(f)()
+            end
             return chance
         elseif st == "number" then
             seed_init = math.tointeger(...)
